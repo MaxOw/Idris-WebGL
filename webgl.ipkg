@@ -1,0 +1,23 @@
+package webgl
+
+modules = Graphics.WebGL
+        , Graphics.WebGL.AnyType
+        , Graphics.WebGL.Utils
+        , Graphics.WebGL.Types
+        , Graphics.WebGL.PerFragment
+        , Graphics.WebGL.Framebuffer
+        , Graphics.WebGL.BufferObject
+        , Graphics.WebGL.ViewClip
+        , Graphics.WebGL.Rasterization
+        , Graphics.WebGL.Shaders
+        , Graphics.WebGL.Shaders.Program
+        , Graphics.WebGL.Shaders.Shader
+        , Graphics.WebGL.Shaders.Uniforms
+        , Graphics.WebGL.Shaders.Attribs
+        , Graphics.WebGL.Texture
+        , Graphics.WebGL.Functions
+        , Graphics.WebGL.RenderbufferObject
+        , Graphics.WebGL.FramebufferObject
+        , Graphics.WebGL.Parameter
+        , Graphics.WebGL.Draw
+
