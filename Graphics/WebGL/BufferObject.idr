@@ -2,6 +2,7 @@ module Graphics.WebGL.BufferObject
 
 import Graphics.WebGL.Types
 import Graphics.WebGL.Utils
+import Graphics.WebGL.AnyType
 
 ----------------------------------------------------------------------
 
@@ -40,50 +41,36 @@ bindBuffer (MkContext context) target (MkBuffer buffer) = mkForeign
 
 ----------------------------------------------------------------------
 
-{-
-bufferData : Context -> BufferTarget -> Int -> BufferUsage -> IO ()
-bufferData (MkContext context) target size usage = mkForeign
+bufferDataSize : Context -> BufferTarget -> Int -> BufferUsage -> IO ()
+bufferDataSize (MkContext context) target size usage = mkForeign
     (FFun "%0.bufferData(%1, %2, %3)"
     [FPtr, FEnum, FInt, FEnum] FUnit)
     context (toGLEnum target) size (toGLEnum usage)
 
 ----------------------------------------------------------------------
 
-bufferData : Context -> BufferTarget -> ArrayBufferView -> BufferUsage -> IO ()
-bufferData (MkContext context) target (MkArrayBufferView data) usage = mkForeign
+class ArrayBufferData a where
+    unpackToPtr : a -> Ptr
+instance ArrayBufferData ArrayBuffer where
+    unpackToPtr (MkArrayBuffer dat) = dat
+instance ArrayBufferData ArrayBufferView where
+    unpackToPtr (MkArrayBufferView dat) = dat
+instance ArrayBufferData Float32Array where
+    unpackToPtr (MkFloat32Array dat) = dat
+
+bufferData : ArrayBufferData a => Context -> BufferTarget -> a -> BufferUsage -> IO ()
+bufferData (MkContext context) target dat usage = mkForeign
     (FFun "%0.bufferData(%1, %2, %3)"
     [FPtr, FEnum, FPtr, FEnum] FUnit)
-    context (toGLEnum target) data (toGLEnum usage)
--}
+    context (toGLEnum target) (unpackToPtr dat) (toGLEnum usage)
+
 ----------------------------------------------------------------------
 
--- bufferData : Context -> BufferTarget -> ArrayBuffer -> BufferUsage -> IO ()
--- bufferData (MkContext context) target (MkArrayBuffer dat) usage = mkForeign
--- bufferData : Context -> BufferTarget -> JSArray Float -> BufferUsage -> IO ()
--- bufferData (MkContext context) target (MkJSArray dat) usage = mkForeign
-bufferData : Context -> BufferTarget -> Float32Array -> BufferUsage -> IO ()
-bufferData (MkContext context) target (MkFloat32Array dat) usage = mkForeign
-    (FFun "%0.bufferData(%1, %2, %3)"
-    [FPtr, FEnum, FPtr, FEnum] FUnit)
-    context (toGLEnum target) dat (toGLEnum usage)
-
-{-
-----------------------------------------------------------------------
-
-bufferSubData : Context -> BufferTarget -> Int -> ArrayBufferView -> IO ()
-bufferSubData (MkContext context) target offset (MkArrayBufferView data) = mkForeign
+bufferSubData : ArrayBufferData a => Context -> BufferTarget -> Int -> a -> IO ()
+bufferSubData (MkContext context) target offset dat = mkForeign
     (FFun "%0.bufferSubData(%1, %2, %3)"
     [FPtr, FEnum, FInt, FPtr] FUnit)
-    context (toGLEnum target) offset data
-
-----------------------------------------------------------------------
--}
-
-bufferSubData : Context -> BufferTarget -> Int -> ArrayBuffer -> IO ()
-bufferSubData (MkContext context) target offset (MkArrayBuffer dat) = mkForeign
-    (FFun "%0.bufferSubData(%1, %2, %3)"
-    [FPtr, FEnum, FInt, FPtr] FUnit)
-    context (toGLEnum target) offset dat
+    context (toGLEnum target) offset (unpackToPtr dat)
 
 ----------------------------------------------------------------------
 
@@ -114,10 +101,15 @@ instance MarshallGLEnum BufferParameter where
     fromGLEnum 0x8764 = BufferSize
     fromGLEnum 0x8765 = BufferUsage'
 
-getBufferParameter : Context -> BufferTarget -> BufferParameter -> IO Int
-getBufferParameter (MkContext context) target pname = mkForeign
+instance MarshallToJType BufferParameter where
+    toJType BufferSize   = JInt
+    toJType BufferUsage' = JEnum BufferUsage fromGLEnum
+
+getBufferParameter : Context -> BufferTarget -> (pname : BufferParameter) -> IO (interpJType (toJType pname))
+getBufferParameter (MkContext context) target pname = 
+    map (unpackType (toJType pname)) $ mkForeign
     (FFun "%0.getBufferParameter(%1, %2)"
-    [FPtr, FEnum, FEnum] FInt)
+    [FPtr, FEnum, FEnum] (toFType (toJType pname)))
     context (toGLEnum target) (toGLEnum pname)
 
 ----------------------------------------------------------------------
