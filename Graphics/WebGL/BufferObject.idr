@@ -49,6 +49,7 @@ bufferDataSize (MkContext context) target size usage = mkForeign
 
 ----------------------------------------------------------------------
 
+abstract
 class ArrayBufferData a where
     unpackToPtr : a -> Ptr
 instance ArrayBufferData ArrayBuffer where
@@ -103,7 +104,7 @@ instance MarshallGLEnum BufferParameter where
 
 instance MarshallToJType BufferParameter where
     toJType BufferSize   = JInt
-    toJType BufferUsage' = JEnum BufferUsage fromGLEnum
+    toJType BufferUsage' = JEnum BufferUsage fromGLEnum toGLEnum
 
 getBufferParameter : Context -> BufferTarget -> (pname : BufferParameter) -> IO (interpJType (toJType pname))
 getBufferParameter (MkContext context) target pname = 

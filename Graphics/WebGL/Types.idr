@@ -49,6 +49,12 @@ instance MarshallGLEnum TextureUnit where
     toGLEnum (MkTextureUnit n) = 0x84C0 + n
     fromGLEnum n = MkTextureUnit (n - 0x84C0)
 
+
+data ImageData        = MkImageData Ptr
+data HTMLImageElement = MkHTMLImageElement Ptr
+data HTMLCanvasElemen = MkHTMLCanvasElemen Ptr
+data HTMLVideoElement = MkHTMLVideoElement Ptr
+
 ----------------------------------------------------------------------
 
 data RenderbufferTarget

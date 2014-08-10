@@ -41,7 +41,7 @@ instance MarshallGLEnum RenderbufferParameter where
 instance MarshallToJType RenderbufferParameter where
     toJType RenderbufferWidth               = JInt
     toJType RenderbufferHeight              = JInt
-    toJType RenderbufferInternalFormat      = JEnum PixelFormat fromGLEnum
+    toJType RenderbufferInternalFormat      = JEnum PixelFormat fromGLEnum toGLEnum
     toJType RenderbufferRedSize             = JInt
     toJType RenderbufferGreenSize           = JInt
     toJType RenderbufferBlueSize            = JInt

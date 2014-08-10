@@ -19,6 +19,7 @@ instance MarshallGLEnum TextureUnitTarget where
 
 ----------------------------------------------------------------------
 
+public
 data TextureTarget
    = Texture2D'
    | TextureCubeMapPositiveX
@@ -86,16 +87,56 @@ instance MarshallGLEnum TextureParameter where
     fromGLEnum 0x2802 = TextureWrapS
     fromGLEnum 0x2803 = TextureWrapT
 
+data TextureFilter
+   = Nearest
+   | Linear
+   | NearestMipmapNearest
+   | LinearMipmapNearest
+   | NearestMipmapLinear
+   | LinearMipmapLinear
+
+instance MarshallGLEnum TextureFilter where
+    toGLEnum Nearest                        = 0x2600
+    toGLEnum Linear                         = 0x2601
+    toGLEnum NearestMipmapNearest           = 0x2700
+    toGLEnum LinearMipmapNearest            = 0x2701
+    toGLEnum NearestMipmapLinear            = 0x2702
+    toGLEnum LinearMipmapLinear             = 0x2703
+
+    fromGLEnum 0x2600 = Nearest
+    fromGLEnum 0x2601 = Linear
+    fromGLEnum 0x2700 = NearestMipmapNearest
+    fromGLEnum 0x2701 = LinearMipmapNearest
+    fromGLEnum 0x2702 = NearestMipmapLinear
+    fromGLEnum 0x2703 = LinearMipmapLinear
+
+data TextureWrapMode
+   = Repeat
+   | ClampToEdge
+   | MirroredRepeat
+
+instance MarshallGLEnum TextureWrapMode where
+    toGLEnum Repeat                         = 0x2901
+    toGLEnum ClampToEdge                    = 0x812F
+    toGLEnum MirroredRepeat                 = 0x8370
+
+    fromGLEnum 0x2901 = Repeat
+    fromGLEnum 0x812F = ClampToEdge
+    fromGLEnum 0x8370 = MirroredRepeat
+
+instance MarshallToJType TextureParameter where
+    toJType TextureMagFilter = JEnum TextureFilter fromGLEnum toGLEnum
+    toJType TextureMinFilter = JEnum TextureFilter fromGLEnum toGLEnum
+    toJType TextureWrapS     = JEnum TextureWrapMode fromGLEnum toGLEnum
+    toJType TextureWrapT     = JEnum TextureWrapMode fromGLEnum toGLEnum
 
 ----------------------------------------------------------------------
 
-{-
 getTexParameter : Context -> TextureUnitTarget -> (pname : TextureParameter) -> IO (interpJType (toJType pname))
 getTexParameter (MkContext context) target pname = map (unpackType (toJType pname)) $ mkForeign
     (FFun "%0.getTexParameter(%1, %2)"
     [FPtr, FEnum, FEnum] (toFType (toJType pname)))
     context (toGLEnum target) (toGLEnum pname)
--}
 
 ----------------------------------------------------------------------
 
@@ -171,53 +212,31 @@ texImage2D (MkContext context) target level internalformat width height border f
 
 ----------------------------------------------------------------------
 
-{-
-texImage2D : Context -> TextureTarget -> Int -> TextureFormat -> TextureFormat -> PixelType -> ImageData -> IO ()
-texImage2D (MkContext context) target level internalformat format type (MkImageData pixels) = mkForeign
+abstract
+    class TextureData a where
+        unpackToPtr : a -> Ptr
+    instance TextureData ImageData where
+        unpackToPtr (MkImageData dat) = dat
+    instance TextureData HTMLImageElement where
+        unpackToPtr (MkHTMLImageElement dat) = dat
+    instance TextureData HTMLCanvasElemen where
+        unpackToPtr (MkHTMLCanvasElemen dat) = dat
+    instance TextureData HTMLVideoElement where
+        unpackToPtr (MkHTMLVideoElement dat) = dat
+
+texImage2DData : TextureData a => Context -> TextureTarget -> Int -> TextureFormat -> TextureFormat -> PixelType -> a -> IO ()
+texImage2DData (MkContext context) target level internalformat format type dat = mkForeign
     (FFun "%0.texImage2D(%1, %2, %3, %4, %5, %6)"
     [FPtr, FEnum, FInt, FEnum, FEnum, FEnum, FPtr] FUnit)
-    context (toGLEnum target) level (toGLEnum internalformat) (toGLEnum format) (toGLEnum type) pixels
+    context (toGLEnum target) level (toGLEnum internalformat) (toGLEnum format) (toGLEnum type) (unpackToPtr dat)
 
 ----------------------------------------------------------------------
 
-texImage2D : Context -> TextureTarget -> Int -> TextureFormat -> TextureFormat -> PixelType -> HTMLImageElement -> IO ()
-texImage2D (MkContext context) target level internalformat format type (MkHTMLImageElement image) = mkForeign
-    (FFun "%0.texImage2D(%1, %2, %3, %4, %5, %6)"
-    [FPtr, FEnum, FInt, FEnum, FEnum, FEnum, FPtr] FUnit)
-    context (toGLEnum target) level (toGLEnum internalformat) (toGLEnum format) (toGLEnum type) image
-
-----------------------------------------------------------------------
-
-texImage2D : Context -> TextureTarget -> Int -> TextureFormat -> TextureFormat -> PixelType -> HTMLCanvasElement -> IO ()
-texImage2D (MkContext context) target level internalformat format type (MkHTMLCanvasElement canvas) = mkForeign
-    (FFun "%0.texImage2D(%1, %2, %3, %4, %5, %6)"
-    [FPtr, FEnum, FInt, FEnum, FEnum, FEnum, FPtr] FUnit)
-    context (toGLEnum target) level (toGLEnum internalformat) (toGLEnum format) (toGLEnum type) canvas
-
-----------------------------------------------------------------------
-
-texImage2D : Context -> TextureTarget -> Int -> TextureFormat -> TextureFormat -> PixelType -> HTMLVideoElement -> IO ()
-texImage2D (MkContext context) target level internalformat format type (MkHTMLVideoElement video) = mkForeign
-    (FFun "%0.texImage2D(%1, %2, %3, %4, %5, %6)"
-    [FPtr, FEnum, FInt, FEnum, FEnum, FEnum, FPtr] FUnit)
-    context (toGLEnum target) level (toGLEnum internalformat) (toGLEnum format) (toGLEnum type) video
--}
-
-----------------------------------------------------------------------
-
-texParameterf : Context -> TextureUnitTarget -> TextureParameter -> Float -> IO ()
-texParameterf (MkContext context) target pname param = mkForeign
-    (FFun "%0.texParameterf(%1, %2, %3)"
-    [FPtr, FEnum, FEnum, FFloat] FUnit)
-    context (toGLEnum target) (toGLEnum pname) param
-
-----------------------------------------------------------------------
-
-texParameteri : Context -> TextureUnitTarget -> TextureParameter -> Int -> IO ()
-texParameteri (MkContext context) target pname param = mkForeign
+texParameter : Context -> TextureUnitTarget -> (pname : TextureParameter) -> interpJType (toJType pname) -> IO ()
+texParameter (MkContext context) target pname param = mkForeign
     (FFun "%0.texParameteri(%1, %2, %3)"
-    [FPtr, FEnum, FEnum, FInt] FUnit)
-    context (toGLEnum target) (toGLEnum pname) param
+    [FPtr, FEnum, FEnum, toFType (toJType pname)] FUnit)
+    context (toGLEnum target) (toGLEnum pname) (packType (toJType pname) param)
 
 ----------------------------------------------------------------------
 
@@ -229,35 +248,10 @@ texSubImage2D (MkContext context) target level xoffset yoffset width height form
 
 ----------------------------------------------------------------------
 
-{-
-texSubImage2D : Context -> GLEnum#target -> Int -> Int -> Int -> GLEnum#format -> GLEnum#type -> ImageData -> IO ()
-texSubImage2D (MkContext context) target level xoffset yoffset format type (MkImageData pixels) = mkForeign
+texSubImage2DData : TextureData a => Context -> TextureTarget -> Int -> Int -> Int -> TextureFormat -> PixelType -> a -> IO ()
+texSubImage2DData (MkContext context) target level xoffset yoffset format type (MkImageData pixels) = mkForeign
     (FFun "%0.texSubImage2D(%1, %2, %3, %4, %5, %6, %7)"
     [FPtr, FEnum, FInt, FInt, FInt, FEnum, FEnum, FPtr] FUnit)
     context (toGLEnum target) level xoffset yoffset (toGLEnum format) (toGLEnum type) pixels
 
-----------------------------------------------------------------------
-
-texSubImage2D : Context -> GLEnum#target -> Int -> Int -> Int -> GLEnum#format -> GLEnum#type -> HTMLImageElement -> IO ()
-texSubImage2D (MkContext context) target level xoffset yoffset format type (MkHTMLImageElement image) = mkForeign
-    (FFun "%0.texSubImage2D(%1, %2, %3, %4, %5, %6, %7)"
-    [FPtr, FEnum, FInt, FInt, FInt, FEnum, FEnum, FPtr] FUnit)
-    context (toGLEnum target) level xoffset yoffset (toGLEnum format) (toGLEnum type) image
-
-----------------------------------------------------------------------
-
-texSubImage2D : Context -> GLEnum#target -> Int -> Int -> Int -> GLEnum#format -> GLEnum#type -> HTMLCanvasElement -> IO ()
-texSubImage2D (MkContext context) target level xoffset yoffset format type (MkHTMLCanvasElement canvas) = mkForeign
-    (FFun "%0.texSubImage2D(%1, %2, %3, %4, %5, %6, %7)"
-    [FPtr, FEnum, FInt, FInt, FInt, FEnum, FEnum, FPtr] FUnit)
-    context (toGLEnum target) level xoffset yoffset (toGLEnum format) (toGLEnum type) canvas
-
-----------------------------------------------------------------------
-
-texSubImage2D : Context -> GLEnum#target -> Int -> Int -> Int -> GLEnum#format -> GLEnum#type -> HTMLVideoElement -> IO ()
-texSubImage2D (MkContext context) target level xoffset yoffset format type (MkHTMLVideoElement video) = mkForeign
-    (FFun "%0.texSubImage2D(%1, %2, %3, %4, %5, %6, %7)"
-    [FPtr, FEnum, FInt, FInt, FInt, FEnum, FEnum, FPtr] FUnit)
-    context (toGLEnum target) level xoffset yoffset (toGLEnum format) (toGLEnum type) video
--}
 ----------------------------------------------------------------------

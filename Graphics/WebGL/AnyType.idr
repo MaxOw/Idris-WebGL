@@ -19,7 +19,9 @@ mutual
       JRenderbuffer : JType
       JTexture      : JType
       JProgram      : JType
-      JEnum         : (t : Type) -> (Int -> t) -> JType
+      JEnum         : (t : Type) -> (Int -> t) -> (t -> Int) -> JType
+      -- Why doesn't this work?
+      -- JEnum         : MarshallGLEnum t => (t : Type) -> JType
 
  class MarshallToJType a where
      toJType : a -> JType
@@ -37,7 +39,7 @@ interpJType JFramebuffer  = Framebuffer
 interpJType JRenderbuffer = Renderbuffer
 interpJType JTexture      = Texture     
 interpJType JProgram      = Program     
-interpJType (JEnum t _)   = t
+interpJType (JEnum t _ _) = t
 
 toFType : JType -> FTy
 toFType JUnit         = FUnit
@@ -52,7 +54,7 @@ toFType JFramebuffer  = FPtr
 toFType JRenderbuffer = FPtr
 toFType JTexture      = FPtr
 toFType JProgram      = FPtr
-toFType (JEnum _ _)   = FEnum
+toFType (JEnum _ _ _) = FEnum
 
 unpackType : (a : JType) -> (interpFTy (toFType a) -> interpJType a)
 unpackType JUnit         = id
@@ -67,5 +69,20 @@ unpackType JFramebuffer  = MkFramebuffer
 unpackType JRenderbuffer = MkRenderbuffer
 unpackType JTexture      = MkTexture     
 unpackType JProgram      = MkProgram     
-unpackType (JEnum _ f)   = f
+unpackType (JEnum _ f _) = f
+
+packType : (a : JType) -> (interpJType a -> interpFTy (toFType a))
+packType JUnit         = id
+packType JBool         = toGLBool
+packType JInt          = id
+packType JFloat        = id
+packType JString       = id
+packType JInt32Array   = \(MkInt32Array   p) => p
+packType JFloat32Array = \(MkFloat32Array p) => p
+packType JBuffer       = \(MkBuffer       p) => p
+packType JFramebuffer  = \(MkFramebuffer  p) => p
+packType JRenderbuffer = \(MkRenderbuffer p) => p
+packType JTexture      = \(MkTexture      p) => p
+packType JProgram      = \(MkProgram      p) => p
+packType (JEnum _ _ g) = g
 
