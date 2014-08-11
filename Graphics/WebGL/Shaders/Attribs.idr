@@ -32,12 +32,38 @@ instance MarshallGLEnum VertexAttribParameter where
     fromGLEnum 0x886A = VertexAttribArrayNormalized
     fromGLEnum 0x8626 = CurrentVertexAttrib
 
+data VertexAttribType
+   = AttribByte
+   | AttribUnsignedByte
+   | AttribShort
+   | AttribUnsignedShort
+   | AttribInt
+   | AttribUnsignedInt
+   | AttribFloat
+
+instance MarshallGLEnum VertexAttribType where
+    toGLEnum AttribByte                           = 0x1400
+    toGLEnum AttribUnsignedByte                   = 0x1401
+    toGLEnum AttribShort                          = 0x1402
+    toGLEnum AttribUnsignedShort                  = 0x1403
+    toGLEnum AttribInt                            = 0x1404
+    toGLEnum AttribUnsignedInt                    = 0x1405
+    toGLEnum AttribFloat                          = 0x1406
+
+    fromGLEnum 0x1400 = AttribByte
+    fromGLEnum 0x1401 = AttribUnsignedByte
+    fromGLEnum 0x1402 = AttribShort
+    fromGLEnum 0x1403 = AttribUnsignedShort
+    fromGLEnum 0x1404 = AttribInt
+    fromGLEnum 0x1405 = AttribUnsignedInt
+    fromGLEnum 0x1406 = AttribFloat
+
 instance MarshallToJType VertexAttribParameter where
     toJType VertexAttribArrayBufferBinding  = JBuffer
     toJType VertexAttribArrayEnabled        = JBool
     toJType VertexAttribArraySize           = JInt
     toJType VertexAttribArrayStride         = JInt
-    toJType VertexAttribArrayType           = JInt -- JEnum t
+    toJType VertexAttribArrayType           = JEnum VertexAttribType fromGLEnum toGLEnum
     toJType VertexAttribArrayNormalized     = JBool
     toJType CurrentVertexAttrib             = JFloat32Array
 
@@ -102,29 +128,6 @@ setVertexPosAttrib (MkProgram program) loc = mkForeign
 
 ----------------------------------------------------------------------
 
-data VertexAttribType
-   = AttribByte
-   | AttribUnsignedByte
-   | AttribShort
-   | AttribUnsignedShort
-   | AttribFixed
-   | AttribFloat
-
-instance MarshallGLEnum VertexAttribType where
-    toGLEnum AttribByte                           = 0x1400
-    toGLEnum AttribUnsignedByte                   = 0x1401
-    toGLEnum AttribShort                          = 0x1402
-    toGLEnum AttribUnsignedShort                  = 0x1403
-
-    toGLEnum AttribFloat                          = 0x1406
-
-    fromGLEnum 0x1400 = AttribByte
-    fromGLEnum 0x1401 = AttribUnsignedByte
-    fromGLEnum 0x1402 = AttribShort
-    fromGLEnum 0x1403 = AttribUnsignedShort
-
-    fromGLEnum 0x1406 = AttribFloat
-
 vertexAttribPointer : Context -> Int -> Int -> VertexAttribType -> Bool -> Int -> Int -> IO ()
 vertexAttribPointer (MkContext context) indx size type normalized stride offset = mkForeign
     (FFun "%0.vertexAttribPointer(%1, %2, %3, %4, %5, %6)"
@@ -133,12 +136,11 @@ vertexAttribPointer (MkContext context) indx size type normalized stride offset 
 
 ----------------------------------------------------------------------
 
-{-
-getVertexAttribOffset : Context -> Int -> GLEnum#pname -> IO Int
-getVertexAttribOffset (MkContext context) index pname = mkForeign
-    (FFun "%0.getVertexAttribOffset(%1, %2)"
-    [FPtr, FInt, FEnum] FInt)
-    context index (toGLEnum pname)
+getVertexAttribOffset : Context -> Int -> IO Int
+getVertexAttribOffset (MkContext context) index = mkForeign
+    (FFun "%0.getVertexAttribOffset(%1, 0x8645)"
+    [FPtr, FInt] FInt)
+    context index
 
 ----------------------------------------------------------------------
 
@@ -152,6 +154,12 @@ vertexAttrib1f (MkContext context) indx x = mkForeign
 
 vertexAttrib1fv : Context -> Int -> JSArray Float -> IO ()
 vertexAttrib1fv (MkContext context) indx (MkJSArray values) = mkForeign
+    (FFun "%0.vertexAttrib1fv(%1, %2)"
+    [FPtr, FInt, FPtr] FUnit)
+    context indx values
+
+vertexAttrib1fva : Context -> Int -> Float32Array -> IO ()
+vertexAttrib1fva (MkContext context) indx (MkFloat32Array values) = mkForeign
     (FFun "%0.vertexAttrib1fv(%1, %2)"
     [FPtr, FInt, FPtr] FUnit)
     context indx values
@@ -172,6 +180,12 @@ vertexAttrib2fv (MkContext context) indx (MkJSArray values) = mkForeign
     [FPtr, FInt, FPtr] FUnit)
     context indx values
 
+vertexAttrib2fva : Context -> Int -> Float32Array -> IO ()
+vertexAttrib2fva (MkContext context) indx (MkFloat32Array values) = mkForeign
+    (FFun "%0.vertexAttrib2fv(%1, %2)"
+    [FPtr, FInt, FPtr] FUnit)
+    context indx values
+
 ----------------------------------------------------------------------
 
 vertexAttrib3f : Context -> Int -> Float -> Float -> Float -> IO ()
@@ -184,6 +198,12 @@ vertexAttrib3f (MkContext context) indx x y z = mkForeign
 
 vertexAttrib3fv : Context -> Int -> JSArray Float -> IO ()
 vertexAttrib3fv (MkContext context) indx (MkJSArray values) = mkForeign
+    (FFun "%0.vertexAttrib3fv(%1, %2)"
+    [FPtr, FInt, FPtr] FUnit)
+    context indx values
+
+vertexAttrib3fva : Context -> Int -> Float32Array -> IO ()
+vertexAttrib3fva (MkContext context) indx (MkFloat32Array values) = mkForeign
     (FFun "%0.vertexAttrib3fv(%1, %2)"
     [FPtr, FInt, FPtr] FUnit)
     context indx values
@@ -204,35 +224,9 @@ vertexAttrib4fv (MkContext context) indx (MkJSArray values) = mkForeign
     [FPtr, FInt, FPtr] FUnit)
     context indx values
 
-----------------------------------------------------------------------
-
-vertexAttrib1fv : Context -> Int -> Float32Array -> IO ()
-vertexAttrib1fv (MkContext context) indx (MkFloat32Array values) = mkForeign
-    (FFun "%0.vertexAttrib1fv(%1, %2)"
-    [FPtr, FInt, FPtr] FUnit)
-    context indx values
-
-----------------------------------------------------------------------
-
-vertexAttrib2fv : Context -> Int -> Float32Array -> IO ()
-vertexAttrib2fv (MkContext context) indx (MkFloat32Array values) = mkForeign
-    (FFun "%0.vertexAttrib2fv(%1, %2)"
-    [FPtr, FInt, FPtr] FUnit)
-    context indx values
-
-----------------------------------------------------------------------
-
-vertexAttrib3fv : Context -> Int -> Float32Array -> IO ()
-vertexAttrib3fv (MkContext context) indx (MkFloat32Array values) = mkForeign
-    (FFun "%0.vertexAttrib3fv(%1, %2)"
-    [FPtr, FInt, FPtr] FUnit)
-    context indx values
-
-----------------------------------------------------------------------
-
-vertexAttrib4fv : Context -> Int -> Float32Array -> IO ()
-vertexAttrib4fv (MkContext context) indx (MkFloat32Array values) = mkForeign
+vertexAttrib4fva : Context -> Int -> Float32Array -> IO ()
+vertexAttrib4fva (MkContext context) indx (MkFloat32Array values) = mkForeign
     (FFun "%0.vertexAttrib4fv(%1, %2)"
     [FPtr, FInt, FPtr] FUnit)
     context indx values
--}
+

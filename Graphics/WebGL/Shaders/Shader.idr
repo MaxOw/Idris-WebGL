@@ -21,7 +21,7 @@ instance MarshallGLEnum ShaderParameter where
     fromGLEnum 0x8B81 = CompileStatus
 
 instance MarshallToJType ShaderParameter where
-    toJType ShaderType    = JInt
+    toJType ShaderType    = JEnum ShaderType fromGLEnum toGLEnum
     toJType DeleteStatus' = JBool
     toJType CompileStatus = JBool
 

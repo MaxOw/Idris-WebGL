@@ -32,13 +32,52 @@ instance MarshallGLEnum Attachment where
     -- fromGLEnum 0x821A = DepthStencilAttachment
 
 ----------------------------------------------------------------------
-{-
-getFramebufferAttachmentParameter : Context -> FramebufferTarget -> Attachment -> (pname : #Parameter) -> IO (interpJType (toJType pname))
+
+data FramebufferAttachmentParameter
+   = FramebufferAttachmentObjectType
+   | FramebufferAttachmentObjectName
+   | FramebufferAttachmentTextureLevel
+   | FramebufferAttachmentTextureCubeMapFace
+
+instance MarshallGLEnum FramebufferAttachmentParameter where
+    toGLEnum FramebufferAttachmentObjectType = 0x8CD0
+    toGLEnum FramebufferAttachmentObjectName = 0x8CD1
+    toGLEnum FramebufferAttachmentTextureLevel = 0x8CD2
+    toGLEnum FramebufferAttachmentTextureCubeMapFace = 0x8CD3
+
+    fromGLEnum 0x8CD0 = FramebufferAttachmentObjectType
+    fromGLEnum 0x8CD1 = FramebufferAttachmentObjectName
+    fromGLEnum 0x8CD2 = FramebufferAttachmentTextureLevel
+    fromGLEnum 0x8CD3 = FramebufferAttachmentTextureCubeMapFace
+
+data AttachmentObjectType
+   = AttachmentNone
+   | AttachmentRenderbuffer
+   | AttachmentTexture
+
+instance MarshallGLEnum AttachmentObjectType where
+    toGLEnum AttachmentNone = 0
+    toGLEnum AttachmentRenderbuffer = 0x8D41
+    toGLEnum AttachmentTexture = 0x1702
+
+    fromGLEnum 0      = AttachmentNone
+    fromGLEnum 0x8D41 = AttachmentRenderbuffer
+    fromGLEnum 0x1702 = AttachmentTexture
+
+instance MarshallToJType FramebufferAttachmentParameter where
+    toJType FramebufferAttachmentObjectType         = JEnum AttachmentObjectType fromGLEnum toGLEnum
+    toJType FramebufferAttachmentObjectName         = JUnit
+        -- Renderbuffer / TextureUnit
+        -- depending on AttachmentObjectType
+    toJType FramebufferAttachmentTextureLevel       = JInt
+    toJType FramebufferAttachmentTextureCubeMapFace = JEnum TextureTarget fromGLEnum toGLEnum
+        -- This is slightly iffy
+
+getFramebufferAttachmentParameter : Context -> FramebufferTarget -> Attachment -> (pname : FramebufferAttachmentParameter) -> IO (interpJType (toJType pname))
 getFramebufferAttachmentParameter (MkContext context) target attachment pname = map (unpackType (toJType pname)) $ mkForeign
     (FFun "%0.getFramebufferAttachmentParameter(%1, %2, %3)"
     [FPtr, FEnum, FEnum, FEnum] (toFType (toJType pname)))
     context (toGLEnum target) (toGLEnum attachment) (toGLEnum pname)
--}
 
 ----------------------------------------------------------------------
 
