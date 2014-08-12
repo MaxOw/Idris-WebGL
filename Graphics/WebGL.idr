@@ -13,5 +13,6 @@ import Graphics.WebGL.RenderbufferObject
 import Graphics.WebGL.FramebufferObject
 import Graphics.WebGL.Parameter
 import Graphics.WebGL.Draw
+import Graphics.WebGL.MainLoop
 
 %access public

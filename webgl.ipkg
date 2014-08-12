@@ -20,4 +20,5 @@ modules = Graphics.WebGL
         , Graphics.WebGL.FramebufferObject
         , Graphics.WebGL.Parameter
         , Graphics.WebGL.Draw
+        , Graphics.WebGL.MainLoop
 
