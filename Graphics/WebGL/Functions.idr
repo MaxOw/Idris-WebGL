@@ -5,12 +5,14 @@ import Graphics.WebGL.Utils
 
 ----------------------------------------------------------------------
 
+public
 getElemById : String -> IO Element
 getElemById x = map MkElement $
     mkForeign (FFun "document.getElementById(%0)" [FString] FPtr) x
 
 ----------------------------------------------------------------------
 
+public
 getContext : Element -> IO Context
 getContext (MkElement x) = map MkContext $
     mkForeign (FFun "%0.getContext('webgl')" [FPtr] FPtr) x
@@ -65,8 +67,10 @@ getContext (MkElement x) = map MkContext $
  -}
 
 -- ToDo expand
+abstract
 data ContextAttributes = MkContextAttributes Ptr
 
+public
 getContextAttributes : Context -> IO ContextAttributes
 getContextAttributes (MkContext context) = map MkContextAttributes $ mkForeign
     (FFun "%0.getContextAttributes()"
@@ -75,6 +79,7 @@ getContextAttributes (MkContext context) = map MkContextAttributes $ mkForeign
 
 ----------------------------------------------------------------------
 
+public
 isContextLost : Context -> IO Bool
 isContextLost (MkContext context) = map fromGLBool $ mkForeign
     (FFun "%0.isContextLost()"
@@ -83,6 +88,7 @@ isContextLost (MkContext context) = map fromGLBool $ mkForeign
 
 ----------------------------------------------------------------------
 
+public
 data Capability
    = CullFace
    | Blend
@@ -115,18 +121,21 @@ instance MarshallGLEnum Capability where
     fromGLEnum 0x809E = SampleAlphaToCoverage
     fromGLEnum 0x80A0 = SampleCoverage
 
+public
 enable : Context -> Capability -> IO ()
 enable (MkContext context) cap = mkForeign
     (FFun "%0.enable(%1)"
     [FPtr, FEnum] FUnit)
     context (toGLEnum cap)
 
+public
 disable : Context -> Capability -> IO ()
 disable (MkContext context) cap = mkForeign
     (FFun "%0.disable(%1)"
     [FPtr, FEnum] FUnit)
     context (toGLEnum cap)
 
+public
 isEnabled : Context -> Capability -> IO Bool
 isEnabled (MkContext context) cap = map fromGLBool $ mkForeign
     (FFun "%0.isEnabled(%1)"
@@ -135,6 +144,7 @@ isEnabled (MkContext context) cap = map fromGLBool $ mkForeign
 
 ----------------------------------------------------------------------
 
+public
 finish : Context -> IO ()
 finish (MkContext context) = mkForeign
     (FFun "%0.finish()"
@@ -143,6 +153,7 @@ finish (MkContext context) = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 flush : Context -> IO ()
 flush (MkContext context) = mkForeign
     (FFun "%0.flush()"
@@ -151,6 +162,7 @@ flush (MkContext context) = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 data ErrorType
    = NoError
    | InvalidEnum
@@ -174,6 +186,7 @@ instance MarshallGLEnum ErrorType where
     fromGLEnum 0x0505 = OutOfMemory
     fromGLEnum 0x0506 = InvalidFramebufferOperation
 
+public
 getError : Context -> IO ErrorType
 getError (MkContext context) = map fromGLEnum $ mkForeign
     (FFun "%0.getError()"
@@ -182,6 +195,7 @@ getError (MkContext context) = map fromGLEnum $ mkForeign
 
 ----------------------------------------------------------------------
 
+public
 data HintTarget
    = GenerateMipmapHint
 
@@ -189,6 +203,7 @@ instance MarshallGLEnum HintTarget where
     toGLEnum GenerateMipmapHint             = 0x8192
     fromGLEnum 0x8192 = GenerateMipmapHint
 
+public
 data HintMode
    = DontCare
    | Fastest
@@ -203,6 +218,7 @@ instance MarshallGLEnum HintMode where
     fromGLEnum 0x1101 = Fastest
     fromGLEnum 0x1102 = Nicest
 
+public
 hint : Context -> HintTarget -> HintMode -> IO ()
 hint (MkContext context) target mode = mkForeign
     (FFun "%0.hint(%1, %2)"
@@ -211,6 +227,7 @@ hint (MkContext context) target mode = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 data Alignment
    = UnpackAlignment
    | PackAlignment
@@ -222,6 +239,7 @@ instance MarshallGLEnum Alignment where
     fromGLEnum 0x0CF5 = UnpackAlignment
     fromGLEnum 0x0D05 = PackAlignment
 
+public
 pixelStorei : Context -> Alignment -> Int -> IO ()
 pixelStorei (MkContext context) pname param = mkForeign
     (FFun "%0.pixelStorei(%1, %2)"
@@ -230,6 +248,7 @@ pixelStorei (MkContext context) pname param = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 readPixels : Context -> Int -> Int -> Int -> Int -> PixelFormat -> PixelType -> ArrayBufferView -> IO ()
 readPixels (MkContext context) x y width height format type (MkArrayBufferView pixels) = mkForeign
     (FFun "%0.readPixels(%1, %2, %3, %4, %5, %6, %7)"

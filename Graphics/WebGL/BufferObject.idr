@@ -6,6 +6,7 @@ import Graphics.WebGL.AnyType
 
 ----------------------------------------------------------------------
 
+public
 data BufferTarget
    = ArrayBufferTarget
    | ElementArrayBufferTarget
@@ -17,6 +18,7 @@ instance MarshallGLEnum BufferTarget where
 
 ----------------------------------------------------------------------
 
+public
 data BufferUsage
    = StreamDraw
    | StaticDraw
@@ -33,6 +35,7 @@ instance MarshallGLEnum BufferUsage where
 
 ----------------------------------------------------------------------
 
+public
 bindBuffer : Context -> BufferTarget -> Buffer -> IO ()
 bindBuffer (MkContext context) target (MkBuffer buffer) = mkForeign
     (FFun "%0.bindBuffer(%1, %2)"
@@ -41,6 +44,7 @@ bindBuffer (MkContext context) target (MkBuffer buffer) = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 bufferDataSize : Context -> BufferTarget -> Int -> BufferUsage -> IO ()
 bufferDataSize (MkContext context) target size usage = mkForeign
     (FFun "%0.bufferData(%1, %2, %3)"
@@ -59,6 +63,7 @@ instance ArrayBufferData ArrayBufferView where
 instance ArrayBufferData Float32Array where
     unpackToPtr (MkFloat32Array dat) = dat
 
+public
 bufferData : ArrayBufferData a => Context -> BufferTarget -> a -> BufferUsage -> IO ()
 bufferData (MkContext context) target dat usage = mkForeign
     (FFun "%0.bufferData(%1, %2, %3)"
@@ -67,6 +72,7 @@ bufferData (MkContext context) target dat usage = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 bufferSubData : ArrayBufferData a => Context -> BufferTarget -> Int -> a -> IO ()
 bufferSubData (MkContext context) target offset dat = mkForeign
     (FFun "%0.bufferSubData(%1, %2, %3)"
@@ -75,6 +81,7 @@ bufferSubData (MkContext context) target offset dat = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 createBuffer : Context -> IO Buffer
 createBuffer (MkContext context) = map MkBuffer $ mkForeign
     (FFun "%0.createBuffer()"
@@ -83,6 +90,7 @@ createBuffer (MkContext context) = map MkBuffer $ mkForeign
 
 ----------------------------------------------------------------------
 
+public
 deleteBuffer : Context -> Buffer -> IO ()
 deleteBuffer (MkContext context) (MkBuffer buffer) = mkForeign
     (FFun "%0.deleteBuffer(%1)"
@@ -91,6 +99,7 @@ deleteBuffer (MkContext context) (MkBuffer buffer) = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 data BufferParameter
    = BufferSize
    | BufferUsage'
@@ -106,6 +115,7 @@ instance MarshallToJType BufferParameter where
     toJType BufferSize   = JInt
     toJType BufferUsage' = JEnum BufferUsage fromGLEnum toGLEnum
 
+public
 getBufferParameter : Context -> BufferTarget -> (pname : BufferParameter) -> IO (interpJType (toJType pname))
 getBufferParameter (MkContext context) target pname = 
     map (unpackType (toJType pname)) $ mkForeign
@@ -115,6 +125,7 @@ getBufferParameter (MkContext context) target pname =
 
 ----------------------------------------------------------------------
 
+public
 isBuffer : Context -> Buffer -> IO Bool
 isBuffer (MkContext context) (MkBuffer buffer) = map fromGLBool $ mkForeign
     (FFun "%0.isBuffer(%1)"
@@ -122,4 +133,3 @@ isBuffer (MkContext context) (MkBuffer buffer) = map fromGLBool $ mkForeign
     context buffer
 
 ----------------------------------------------------------------------
-

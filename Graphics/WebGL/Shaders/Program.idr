@@ -4,6 +4,7 @@ import Graphics.WebGL.Types
 import Graphics.WebGL.Utils
 import Graphics.WebGL.AnyType
 
+public
 data ProgramParameter
    = DeleteStatus
    | LinkStatus
@@ -37,6 +38,7 @@ instance MarshallToJType ProgramParameter where
 
 ----------------------------------------------------------------------
 
+public
 getProgramParameter : Context -> Program -> (pname : ProgramParameter) -> IO (interpJType (toJType pname))
 getProgramParameter (MkContext context) (MkProgram program) pname = map (unpackType (toJType pname)) $ mkForeign
     (FFun "%0.getProgramParameter(%1, %2)"
@@ -45,6 +47,7 @@ getProgramParameter (MkContext context) (MkProgram program) pname = map (unpackT
 
 ----------------------------------------------------------------------
 
+public
 createProgram : Context -> IO Program
 createProgram (MkContext context) = map MkProgram $ mkForeign
     (FFun "%0.createProgram()"
@@ -53,6 +56,7 @@ createProgram (MkContext context) = map MkProgram $ mkForeign
 
 ----------------------------------------------------------------------
 
+public
 deleteProgram : Context -> Program -> IO ()
 deleteProgram (MkContext context) (MkProgram program) = mkForeign
     (FFun "%0.deleteProgram(%1)"
@@ -61,6 +65,7 @@ deleteProgram (MkContext context) (MkProgram program) = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 attachShader : Context -> Program -> Shader -> IO ()
 attachShader (MkContext context) (MkProgram program) (MkShader shader) = mkForeign
     (FFun "%0.attachShader(%1, %2)"
@@ -69,6 +74,7 @@ attachShader (MkContext context) (MkProgram program) (MkShader shader) = mkForei
 
 ----------------------------------------------------------------------
 
+public
 detachShader : Context -> Program -> Shader -> IO ()
 detachShader (MkContext context) (MkProgram program) (MkShader shader) = mkForeign
     (FFun "%0.detachShader(%1, %2)"
@@ -77,6 +83,7 @@ detachShader (MkContext context) (MkProgram program) (MkShader shader) = mkForei
 
 ----------------------------------------------------------------------
 
+public
 getAttachedShaders : Context -> Program -> IO (JSArray Shader)
 getAttachedShaders (MkContext context) (MkProgram program) = map MkJSArray $ mkForeign
     (FFun "%0.getAttachedShaders(%1)"
@@ -85,6 +92,7 @@ getAttachedShaders (MkContext context) (MkProgram program) = map MkJSArray $ mkF
 
 ----------------------------------------------------------------------
 
+public
 getProgramInfoLog : Context -> Program -> IO String
 getProgramInfoLog (MkContext context) (MkProgram program) = mkForeign
     (FFun "%0.getProgramInfoLog(%1)"
@@ -93,6 +101,7 @@ getProgramInfoLog (MkContext context) (MkProgram program) = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 isProgram : Context -> Program -> IO Bool
 isProgram (MkContext context) (MkProgram program) = map fromGLBool $ mkForeign
     (FFun "%0.isProgram(%1)"
@@ -101,6 +110,7 @@ isProgram (MkContext context) (MkProgram program) = map fromGLBool $ mkForeign
 
 ----------------------------------------------------------------------
 
+public
 linkProgram : Context -> Program -> IO ()
 linkProgram (MkContext context) (MkProgram program) = mkForeign
     (FFun "%0.linkProgram(%1)"
@@ -109,6 +119,7 @@ linkProgram (MkContext context) (MkProgram program) = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 useProgram : Context -> Program -> IO ()
 useProgram (MkContext context) (MkProgram program) = mkForeign
     (FFun "%0.useProgram(%1)"
@@ -117,6 +128,7 @@ useProgram (MkContext context) (MkProgram program) = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 validateProgram : Context -> Program -> IO ()
 validateProgram (MkContext context) (MkProgram program) = mkForeign
     (FFun "%0.validateProgram(%1)"

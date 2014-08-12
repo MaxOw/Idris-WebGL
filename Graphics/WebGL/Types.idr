@@ -2,9 +2,12 @@ module Graphics.WebGL.Types
 
 import Graphics.WebGL.Utils
 
+public
 Color : Type
 Color = Vect 4 Float
 
+-- This should be abstract :/
+public
 data Element = MkElement Ptr
 
 -- WebGLRenderingContext (section 5.12)
@@ -27,22 +30,33 @@ data Element = MkElement Ptr
  -     
  -}
 
+-- This all should be abstract
+public
 data Context = MkContext Ptr
 
 -- WebGLObject (section 5.3)
 -- https://www.khronos.org/registry/webgl/specs/1.0.0/#5.3
 
+public
 data Buffer = MkBuffer Ptr
+public
 data Texture = MkTexture Ptr
+public
 data Framebuffer = MkFramebuffer Ptr
+public
 data Renderbuffer = MkRenderbuffer Ptr
+public
 data Program = MkProgram Ptr
+public
 data Shader = MkShader Ptr
+public
 data UniformLocation = MkUniformLocation Ptr
+public
 data ActiveInfo = MkActiveInfo Ptr
 
 ----------------------------------------------------------------------
 
+public
 data TextureUnit = MkTextureUnit Int
 
 instance MarshallGLEnum TextureUnit where
@@ -50,19 +64,25 @@ instance MarshallGLEnum TextureUnit where
     fromGLEnum n = MkTextureUnit (n - 0x84C0)
 
 
+public
 data ImageData        = MkImageData Ptr
+public
 data HTMLImageElement = MkHTMLImageElement Ptr
+public
 data HTMLCanvasElemen = MkHTMLCanvasElemen Ptr
+public
 data HTMLVideoElement = MkHTMLVideoElement Ptr
 
 ----------------------------------------------------------------------
 
+public
 data RenderbufferTarget
    = RenderbufferTarget'
 instance MarshallGLEnum RenderbufferTarget where
     toGLEnum RenderbufferTarget' = 0x8D41
     fromGLEnum 0x8D41 = RenderbufferTarget'
 
+public
 data ShaderType
    = FragmentShader
    | VertexShader
@@ -74,6 +94,7 @@ instance MarshallGLEnum ShaderType where
     fromGLEnum 0x8B30 = FragmentShader
     fromGLEnum 0x8B31 = VertexShader
 
+public
 data Face
    = Front
    | Back
@@ -88,6 +109,7 @@ instance MarshallGLEnum Face where
     fromGLEnum 0x0405 = Back
     fromGLEnum 0x0408 = FrontAndBack
 
+public
 data PixelFormat
    = PixelFormatAlpha
    | PixelFormatRGB
@@ -102,6 +124,7 @@ instance MarshallGLEnum PixelFormat where
     fromGLEnum 0x1907 = PixelFormatRGB
     fromGLEnum 0x1908 = PixelFormatRGBA
 
+public
 data PixelType
    = PixelTypeUnsignedByte
    | PixelTypeUnsignedShort565
@@ -121,22 +144,28 @@ instance MarshallGLEnum PixelType where
 
 ----------------------------------------------------------------------
 
+public
 data JSArray a = MkJSArray Ptr
 
+public
 newJSArray : IO (JSArray a)
 newJSArray = map MkJSArray $ mkForeign (FFun "new Array()" [] FPtr)
 
+public
 void : IO a -> IO ()
 void m = do m; return ()
 
+public
 pushFloat : JSArray Float -> Float -> IO ()
 pushFloat (MkJSArray arr) a = void $
         mkForeign (FFun "%0.push(%1)" [FPtr, FFloat] FInt) arr a
 
+public
 pushInt : JSArray Int -> Int -> IO ()
 pushInt (MkJSArray arr) a = void $
         mkForeign (FFun "%0.push(%1)" [FPtr, FInt] FInt) arr a
 
+public
 class JSArrayPush a where
     push : JSArray a -> a -> IO ()
 instance JSArrayPush Float where
@@ -144,6 +173,7 @@ instance JSArrayPush Float where
 instance JSArrayPush Int where
     push = pushInt
 
+public
 arrayFromList : JSArrayPush a => List a -> IO (JSArray a)
 arrayFromList ls = do
     arr <- newJSArray
@@ -170,7 +200,9 @@ data ViewType
    | Float32Array
 -}
 
+public
 data ArrayBuffer = MkArrayBuffer Ptr
+public
 data ArrayBufferView = MkArrayBufferView Ptr
 
 {-
@@ -179,14 +211,18 @@ newArrayBuffer size = map MkArrayBuffer $ mkForeign
     (FFun "new ArrayBuffer(%0)" [FInt] FPtr) size
 -}
 
+public
 data Float32Array = MkFloat32Array Ptr
 
+public
 newFloat32Array : JSArray Float -> IO Float32Array
 newFloat32Array (MkJSArray ptr) = map MkFloat32Array $ mkForeign 
     (FFun "new Float32Array(%0)" [FPtr] FPtr) ptr
 
+public
 data Int32Array = MkInt32Array Ptr
 
+public
 newInt32Array : JSArray Float -> IO Int32Array
 newInt32Array (MkJSArray ptr) = map MkInt32Array $ mkForeign 
     (FFun "new Int32Array(%0)" [FPtr] FPtr) ptr

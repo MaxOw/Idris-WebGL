@@ -6,6 +6,7 @@ import Graphics.WebGL.AnyType
 
 ----------------------------------------------------------------------
 
+public
 data VertexAttribParameter
    = VertexAttribArrayBufferBinding
    | VertexAttribArrayEnabled
@@ -32,6 +33,7 @@ instance MarshallGLEnum VertexAttribParameter where
     fromGLEnum 0x886A = VertexAttribArrayNormalized
     fromGLEnum 0x8626 = CurrentVertexAttrib
 
+public
 data VertexAttribType
    = AttribByte
    | AttribUnsignedByte
@@ -69,6 +71,7 @@ instance MarshallToJType VertexAttribParameter where
 
 ----------------------------------------------------------------------
 
+public
 getVertexAttrib : Context -> Int -> (pname : VertexAttribParameter) -> IO (interpJType (toJType pname))
 getVertexAttrib (MkContext context) index pname =
     map (unpackType (toJType pname)) $ mkForeign
@@ -78,6 +81,7 @@ getVertexAttrib (MkContext context) index pname =
 
 ----------------------------------------------------------------------
 
+public
 disableVertexAttribArray : Context -> Int -> IO ()
 disableVertexAttribArray (MkContext context) index = mkForeign
     (FFun "%0.disableVertexAttribArray(%1)"
@@ -86,6 +90,7 @@ disableVertexAttribArray (MkContext context) index = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 enableVertexAttribArray : Context -> Int -> IO ()
 enableVertexAttribArray (MkContext context) index = mkForeign
     (FFun "%0.enableVertexAttribArray(%1)"
@@ -94,6 +99,7 @@ enableVertexAttribArray (MkContext context) index = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 getActiveAttrib : Context -> Program -> Int -> IO ActiveInfo
 getActiveAttrib (MkContext context) (MkProgram program) index = map MkActiveInfo $ mkForeign
     (FFun "%0.getActiveAttrib(%1, %2)"
@@ -102,6 +108,7 @@ getActiveAttrib (MkContext context) (MkProgram program) index = map MkActiveInfo
 
 ----------------------------------------------------------------------
 
+public
 bindAttribLocation : Context -> Program -> Int -> String -> IO ()
 bindAttribLocation (MkContext context) (MkProgram program) index name = mkForeign
     (FFun "%0.bindAttribLocation(%1, %2, %3)"
@@ -110,6 +117,7 @@ bindAttribLocation (MkContext context) (MkProgram program) index name = mkForeig
 
 ----------------------------------------------------------------------
 
+public
 getAttribLocation : Context -> Program -> String -> IO Int
 getAttribLocation (MkContext context) (MkProgram program) name = mkForeign
     (FFun "%0.getAttribLocation(%1, %2)"
@@ -119,6 +127,7 @@ getAttribLocation (MkContext context) (MkProgram program) name = mkForeign
 ----------------------------------------------------------------------
 
 {-
+public
 setVertexPosAttrib : Program -> Int -> IO ()
 setVertexPosAttrib (MkProgram program) loc = mkForeign
     (FFun "%0.getVertexPosAttrib = %1"
@@ -128,6 +137,7 @@ setVertexPosAttrib (MkProgram program) loc = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 vertexAttribPointer : Context -> Int -> Int -> VertexAttribType -> Bool -> Int -> Int -> IO ()
 vertexAttribPointer (MkContext context) indx size type normalized stride offset = mkForeign
     (FFun "%0.vertexAttribPointer(%1, %2, %3, %4, %5, %6)"
@@ -136,6 +146,7 @@ vertexAttribPointer (MkContext context) indx size type normalized stride offset 
 
 ----------------------------------------------------------------------
 
+public
 getVertexAttribOffset : Context -> Int -> IO Int
 getVertexAttribOffset (MkContext context) index = mkForeign
     (FFun "%0.getVertexAttribOffset(%1, 0x8645)"
@@ -144,6 +155,7 @@ getVertexAttribOffset (MkContext context) index = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 vertexAttrib1f : Context -> Int -> Float -> IO ()
 vertexAttrib1f (MkContext context) indx x = mkForeign
     (FFun "%0.vertexAttrib1f(%1, %2)"
@@ -152,12 +164,14 @@ vertexAttrib1f (MkContext context) indx x = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 vertexAttrib1fv : Context -> Int -> JSArray Float -> IO ()
 vertexAttrib1fv (MkContext context) indx (MkJSArray values) = mkForeign
     (FFun "%0.vertexAttrib1fv(%1, %2)"
     [FPtr, FInt, FPtr] FUnit)
     context indx values
 
+public
 vertexAttrib1fva : Context -> Int -> Float32Array -> IO ()
 vertexAttrib1fva (MkContext context) indx (MkFloat32Array values) = mkForeign
     (FFun "%0.vertexAttrib1fv(%1, %2)"
@@ -166,6 +180,7 @@ vertexAttrib1fva (MkContext context) indx (MkFloat32Array values) = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 vertexAttrib2f : Context -> Int -> Float -> Float -> IO ()
 vertexAttrib2f (MkContext context) indx x y = mkForeign
     (FFun "%0.vertexAttrib2f(%1, %2, %3)"
@@ -174,12 +189,14 @@ vertexAttrib2f (MkContext context) indx x y = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 vertexAttrib2fv : Context -> Int -> JSArray Float -> IO ()
 vertexAttrib2fv (MkContext context) indx (MkJSArray values) = mkForeign
     (FFun "%0.vertexAttrib2fv(%1, %2)"
     [FPtr, FInt, FPtr] FUnit)
     context indx values
 
+public
 vertexAttrib2fva : Context -> Int -> Float32Array -> IO ()
 vertexAttrib2fva (MkContext context) indx (MkFloat32Array values) = mkForeign
     (FFun "%0.vertexAttrib2fv(%1, %2)"
@@ -188,6 +205,7 @@ vertexAttrib2fva (MkContext context) indx (MkFloat32Array values) = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 vertexAttrib3f : Context -> Int -> Float -> Float -> Float -> IO ()
 vertexAttrib3f (MkContext context) indx x y z = mkForeign
     (FFun "%0.vertexAttrib3f(%1, %2, %3, %4)"
@@ -196,12 +214,14 @@ vertexAttrib3f (MkContext context) indx x y z = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 vertexAttrib3fv : Context -> Int -> JSArray Float -> IO ()
 vertexAttrib3fv (MkContext context) indx (MkJSArray values) = mkForeign
     (FFun "%0.vertexAttrib3fv(%1, %2)"
     [FPtr, FInt, FPtr] FUnit)
     context indx values
 
+public
 vertexAttrib3fva : Context -> Int -> Float32Array -> IO ()
 vertexAttrib3fva (MkContext context) indx (MkFloat32Array values) = mkForeign
     (FFun "%0.vertexAttrib3fv(%1, %2)"
@@ -210,6 +230,7 @@ vertexAttrib3fva (MkContext context) indx (MkFloat32Array values) = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 vertexAttrib4f : Context -> Int -> Float -> Float -> Float -> Float -> IO ()
 vertexAttrib4f (MkContext context) indx x y z w = mkForeign
     (FFun "%0.vertexAttrib4f(%1, %2, %3, %4, %5)"
@@ -218,12 +239,14 @@ vertexAttrib4f (MkContext context) indx x y z w = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 vertexAttrib4fv : Context -> Int -> JSArray Float -> IO ()
 vertexAttrib4fv (MkContext context) indx (MkJSArray values) = mkForeign
     (FFun "%0.vertexAttrib4fv(%1, %2)"
     [FPtr, FInt, FPtr] FUnit)
     context indx values
 
+public
 vertexAttrib4fva : Context -> Int -> Float32Array -> IO ()
 vertexAttrib4fva (MkContext context) indx (MkFloat32Array values) = mkForeign
     (FFun "%0.vertexAttrib4fv(%1, %2)"

@@ -8,6 +8,7 @@ import Graphics.WebGL.Utils
 
 ----------------------------------------------------------------------
 
+public
 blendColor : Context -> Float -> Float -> Float -> Float -> IO ()
 blendColor (MkContext context) red green blue alpha = mkForeign
     (FFun "%0.blendColor(%1, %2, %3, %4)"
@@ -16,6 +17,7 @@ blendColor (MkContext context) red green blue alpha = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 data BlendEquation
    = FuncAdd
    | FuncSubtract
@@ -29,6 +31,7 @@ instance MarshallGLEnum BlendEquation where
     fromGLEnum 0x800A = FuncSubtract
     fromGLEnum 0x800B = FuncReverseSubtract
 
+public
 blendEquation : Context -> BlendEquation -> IO ()
 blendEquation (MkContext context) mode = mkForeign
     (FFun "%0.blendEquation(%1)"
@@ -37,6 +40,7 @@ blendEquation (MkContext context) mode = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 data BlendFunc
    = Zero
    | One
@@ -87,6 +91,7 @@ instance MarshallGLEnum BlendFunc where
     fromGLEnum 0x8003 = ConstantAlpha
     fromGLEnum 0x8004 = OneMinusConstantAlpha
 
+public
 blendEquationSeparate : Context -> BlendEquation -> BlendEquation -> IO ()
 blendEquationSeparate (MkContext context) modeRGB modeAlpha = mkForeign
     (FFun "%0.blendEquationSeparate(%1, %2)"
@@ -95,6 +100,7 @@ blendEquationSeparate (MkContext context) modeRGB modeAlpha = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 blendFunc : Context -> BlendFunc -> BlendFunc -> IO ()
 blendFunc (MkContext context) sfactor dfactor = mkForeign
     (FFun "%0.blendFunc(%1, %2)"
@@ -103,6 +109,7 @@ blendFunc (MkContext context) sfactor dfactor = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 blendFuncSeparate : Context -> BlendFunc -> BlendFunc -> BlendFunc -> BlendFunc -> IO ()
 blendFuncSeparate (MkContext context) srcRGB dstRGB srcAlpha dstAlpha = mkForeign
     (FFun "%0.blendFuncSeparate(%1, %2, %3, %4)"
@@ -111,6 +118,7 @@ blendFuncSeparate (MkContext context) srcRGB dstRGB srcAlpha dstAlpha = mkForeig
 
 ----------------------------------------------------------------------
 
+public
 data RelationFunc
    = Never
    | Less
@@ -140,6 +148,7 @@ instance MarshallGLEnum RelationFunc where
     fromGLEnum 0x0206 = GEqual
     fromGLEnum 0x0207 = Always
 
+public
 depthFunc : Context -> RelationFunc -> IO ()
 depthFunc (MkContext context) func = mkForeign
     (FFun "%0.depthFunc(%1)"
@@ -148,6 +157,7 @@ depthFunc (MkContext context) func = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 sampleCoverage : Context -> Float -> Bool -> IO ()
 sampleCoverage (MkContext context) value invert = mkForeign
     (FFun "%0.sampleCoverage(%1, %2)"
@@ -156,6 +166,7 @@ sampleCoverage (MkContext context) value invert = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 stencilFunc : Context -> RelationFunc -> Int -> Int -> IO ()
 stencilFunc (MkContext context) func ref mask = mkForeign
     (FFun "%0.stencilFunc(%1, %2, %3)"
@@ -164,6 +175,7 @@ stencilFunc (MkContext context) func ref mask = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 stencilFuncSeparate : Context -> Face -> RelationFunc -> Int -> Int -> IO ()
 stencilFuncSeparate (MkContext context) face func ref mask = mkForeign
     (FFun "%0.stencilFuncSeparate(%1, %2, %3, %4)"
@@ -172,6 +184,7 @@ stencilFuncSeparate (MkContext context) face func ref mask = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 data StencilOp
    = OpZero
    | OpKeep
@@ -201,6 +214,7 @@ instance MarshallGLEnum StencilOp where
     fromGLEnum 0x8507 = OpIncrWrap
     fromGLEnum 0x8508 = OpDecrWrap
 
+public
 stencilOp : Context -> StencilOp -> StencilOp -> StencilOp -> IO ()
 stencilOp (MkContext context) fail zfail zpass = mkForeign
     (FFun "%0.stencilOp(%1, %2, %3)"
@@ -209,6 +223,7 @@ stencilOp (MkContext context) fail zfail zpass = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 stencilOpSeparate : Context -> Face -> StencilOp -> StencilOp -> StencilOp -> IO ()
 stencilOpSeparate (MkContext context) face fail zfail zpass = mkForeign
     (FFun "%0.stencilOpSeparate(%1, %2, %3, %4)"

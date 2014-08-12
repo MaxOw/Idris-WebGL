@@ -8,11 +8,13 @@ import Graphics.WebGL.Utils
 
 ----------------------------------------------------------------------
 
+public
 data BufferBit
    = DepthBuffer
    | StencilBuffer
    | ColorBuffer
 
+public
 bitToInt : BufferBit -> Int
 bitToInt DepthBuffer   = 0x00000100
 bitToInt StencilBuffer = 0x00000400
@@ -23,6 +25,7 @@ instance MarshallGLEnum (List BufferBit) where
     fromGLEnum n = filter (\a => n .&. bitToInt a /= 0)
                  [ DepthBuffer, StencilBuffer, ColorBuffer ]
 
+public
 clear : Context -> List BufferBit -> IO ()
 clear (MkContext context) bs = mkForeign
     (FFun "%0.clear(%1)"
@@ -31,6 +34,7 @@ clear (MkContext context) bs = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 clearColor : Context -> Float -> Float -> Float -> Float -> IO ()
 clearColor (MkContext context) red green blue alpha = mkForeign
     (FFun "%0.clearColor(%1, %2, %3, %4)"
@@ -39,6 +43,7 @@ clearColor (MkContext context) red green blue alpha = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 clearDepth : Context -> Float -> IO ()
 clearDepth (MkContext context) depth = mkForeign
     (FFun "%0.clearDepth(%1)"
@@ -47,6 +52,7 @@ clearDepth (MkContext context) depth = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 clearStencil : Context -> Int -> IO ()
 clearStencil (MkContext context) s = mkForeign
     (FFun "%0.clearStencil(%1)"
@@ -55,6 +61,7 @@ clearStencil (MkContext context) s = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 colorMask : Context -> Bool -> Bool -> Bool -> Bool -> IO ()
 colorMask (MkContext context) red green blue alpha = mkForeign
     (FFun "%0.colorMask(%1, %2, %3, %4)"
@@ -63,6 +70,7 @@ colorMask (MkContext context) red green blue alpha = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 depthMask : Context -> Bool -> IO ()
 depthMask (MkContext context) flag = mkForeign
     (FFun "%0.depthMask(%1)"
@@ -71,6 +79,7 @@ depthMask (MkContext context) flag = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 stencilMask : Context -> Int -> IO ()
 stencilMask (MkContext context) mask = mkForeign
     (FFun "%0.stencilMask(%1)"
@@ -79,6 +88,7 @@ stencilMask (MkContext context) mask = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 stencilMaskSeparate : Context -> Face -> Int -> IO ()
 stencilMaskSeparate (MkContext context) face mask = mkForeign
     (FFun "%0.stencilMaskSeparate(%1, %2)"

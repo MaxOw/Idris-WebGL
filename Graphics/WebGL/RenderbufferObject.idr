@@ -6,6 +6,7 @@ import Graphics.WebGL.AnyType
 
 ----------------------------------------------------------------------
 
+public
 data RenderbufferParameter
    = RenderbufferWidth
    | RenderbufferHeight
@@ -51,6 +52,7 @@ instance MarshallToJType RenderbufferParameter where
 
 ----------------------------------------------------------------------
 
+public
 getRenderbufferParameter : Context -> RenderbufferTarget -> (pname : RenderbufferParameter) -> IO (interpJType (toJType pname))
 getRenderbufferParameter (MkContext context) target pname =
     map (unpackType (toJType pname)) $ mkForeign
@@ -60,6 +62,7 @@ getRenderbufferParameter (MkContext context) target pname =
 
 ----------------------------------------------------------------------
 
+public
 bindRenderbuffer : Context -> RenderbufferTarget -> Renderbuffer -> IO ()
 bindRenderbuffer (MkContext context) target (MkRenderbuffer renderbuffer) = mkForeign
     (FFun "%0.bindRenderbuffer(%1, %2)"
@@ -68,6 +71,7 @@ bindRenderbuffer (MkContext context) target (MkRenderbuffer renderbuffer) = mkFo
 
 ----------------------------------------------------------------------
 
+public
 createRenderbuffer : Context -> IO Renderbuffer
 createRenderbuffer (MkContext context) = map MkRenderbuffer $ mkForeign
     (FFun "%0.createRenderbuffer()"
@@ -76,6 +80,7 @@ createRenderbuffer (MkContext context) = map MkRenderbuffer $ mkForeign
 
 ----------------------------------------------------------------------
 
+public
 deleteRenderbuffer : Context -> Renderbuffer -> IO ()
 deleteRenderbuffer (MkContext context) (MkRenderbuffer renderbuffer) = mkForeign
     (FFun "%0.deleteRenderbuffer(%1)"
@@ -84,6 +89,7 @@ deleteRenderbuffer (MkContext context) (MkRenderbuffer renderbuffer) = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 isRenderbuffer : Context -> Renderbuffer -> IO Bool
 isRenderbuffer (MkContext context) (MkRenderbuffer renderbuffer) = map fromGLBool $ mkForeign
     (FFun "%0.isRenderbuffer(%1)"
@@ -92,6 +98,7 @@ isRenderbuffer (MkContext context) (MkRenderbuffer renderbuffer) = map fromGLBoo
 
 ----------------------------------------------------------------------
 
+public
 data StorageFormat
    = StorageFormatRGBA4
    | StorageFormatRGB5A1
@@ -112,6 +119,7 @@ instance MarshallGLEnum StorageFormat where
     fromGLEnum 0x81A5 = StorageFormatDepthComponent16
     fromGLEnum 0x8D48 = StorageFormatStencilIndex8
 
+public
 renderbufferStorage : Context -> RenderbufferTarget -> StorageFormat -> Int -> Int -> IO ()
 renderbufferStorage (MkContext context) target internalformat width height = mkForeign
     (FFun "%0.renderbufferStorage(%1, %2, %3, %4)"

@@ -6,6 +6,7 @@ import Graphics.WebGL.AnyType
 
 ----------------------------------------------------------------------
 
+public
 data ShaderParameter
    = ShaderType
    | DeleteStatus'
@@ -27,6 +28,7 @@ instance MarshallToJType ShaderParameter where
 
 ----------------------------------------------------------------------
 
+public
 getShaderParameter : Context -> Shader -> (pname : ShaderParameter) -> IO (interpJType (toJType pname))
 getShaderParameter (MkContext context) (MkShader shader) pname =
     map (unpackType (toJType pname)) $ mkForeign
@@ -36,6 +38,7 @@ getShaderParameter (MkContext context) (MkShader shader) pname =
 
 ----------------------------------------------------------------------
 
+public
 compileShader : Context -> Shader -> IO ()
 compileShader (MkContext context) (MkShader shader) = mkForeign
     (FFun "%0.compileShader(%1)"
@@ -44,6 +47,7 @@ compileShader (MkContext context) (MkShader shader) = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 createShader : Context -> ShaderType -> IO Shader
 createShader (MkContext context) typ = map MkShader $ mkForeign
     (FFun "%0.createShader(%1)"
@@ -52,6 +56,7 @@ createShader (MkContext context) typ = map MkShader $ mkForeign
 
 ----------------------------------------------------------------------
 
+public
 deleteShader : Context -> Shader -> IO ()
 deleteShader (MkContext context) (MkShader shader) = mkForeign
     (FFun "%0.deleteShader(%1)"
@@ -60,6 +65,7 @@ deleteShader (MkContext context) (MkShader shader) = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 getShaderInfoLog : Context -> Shader -> IO String
 getShaderInfoLog (MkContext context) (MkShader shader) = mkForeign
     (FFun "%0.getShaderInfoLog(%1)"
@@ -68,6 +74,7 @@ getShaderInfoLog (MkContext context) (MkShader shader) = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 getShaderSource : Context -> Shader -> IO String
 getShaderSource (MkContext context) (MkShader shader) = mkForeign
     (FFun "%0.getShaderSource(%1)"
@@ -76,6 +83,7 @@ getShaderSource (MkContext context) (MkShader shader) = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 isShader : Context -> Shader -> IO Bool
 isShader (MkContext context) (MkShader shader) = map fromGLBool $ mkForeign
     (FFun "%0.isShader(%1)"
@@ -84,6 +92,7 @@ isShader (MkContext context) (MkShader shader) = map fromGLBool $ mkForeign
 
 ----------------------------------------------------------------------
 
+public
 shaderSource : Context -> Shader -> String -> IO ()
 shaderSource (MkContext context) (MkShader shader) source = mkForeign
     (FFun "%0.shaderSource(%1, %2)"

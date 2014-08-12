@@ -6,6 +6,7 @@ import Graphics.WebGL.AnyType
 
 ----------------------------------------------------------------------
 
+public
 data TextureUnitTarget
    = Texture2D
    | TextureCubeMap
@@ -48,6 +49,7 @@ instance MarshallGLEnum TextureTarget where
 
 ----------------------------------------------------------------------
 
+public
 data TextureFormat
    = TextureAlpha
    | TextureRGB
@@ -70,6 +72,7 @@ instance MarshallGLEnum TextureFormat where
 
 ----------------------------------------------------------------------
 
+public
 data TextureParameter
    = TextureMagFilter
    | TextureMinFilter
@@ -87,6 +90,7 @@ instance MarshallGLEnum TextureParameter where
     fromGLEnum 0x2802 = TextureWrapS
     fromGLEnum 0x2803 = TextureWrapT
 
+public
 data TextureFilter
    = Nearest
    | Linear
@@ -110,6 +114,7 @@ instance MarshallGLEnum TextureFilter where
     fromGLEnum 0x2702 = NearestMipmapLinear
     fromGLEnum 0x2703 = LinearMipmapLinear
 
+public
 data TextureWrapMode
    = Repeat
    | ClampToEdge
@@ -132,6 +137,7 @@ instance MarshallToJType TextureParameter where
 
 ----------------------------------------------------------------------
 
+public
 getTexParameter : Context -> TextureUnitTarget -> (pname : TextureParameter) -> IO (interpJType (toJType pname))
 getTexParameter (MkContext context) target pname = map (unpackType (toJType pname)) $ mkForeign
     (FFun "%0.getTexParameter(%1, %2)"
@@ -140,6 +146,7 @@ getTexParameter (MkContext context) target pname = map (unpackType (toJType pnam
 
 ----------------------------------------------------------------------
 
+public
 activeTexture : Context -> TextureUnit -> IO ()
 activeTexture (MkContext context) texture = mkForeign
     (FFun "%0.activeTexture(%1)"
@@ -148,6 +155,7 @@ activeTexture (MkContext context) texture = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 bindTexture : Context -> TextureUnitTarget -> Texture -> IO ()
 bindTexture (MkContext context) target (MkTexture texture) = mkForeign
     (FFun "%0.bindTexture(%1, %2)"
@@ -156,6 +164,7 @@ bindTexture (MkContext context) target (MkTexture texture) = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 copyTexImage2D : Context -> TextureTarget -> Int -> TextureFormat -> Int -> Int -> Int -> Int -> Int -> IO ()
 copyTexImage2D (MkContext context) target level internalformat x y width height border = mkForeign
     (FFun "%0.copyTexImage2D(%1, %2, %3, %4, %5, %6, %7, %8)"
@@ -164,6 +173,7 @@ copyTexImage2D (MkContext context) target level internalformat x y width height 
 
 ----------------------------------------------------------------------
 
+public
 copyTexSubImage2D : Context -> TextureTarget -> Int -> Int -> Int -> Int -> Int -> Int -> Int -> IO ()
 copyTexSubImage2D (MkContext context) target level xoffset yoffset x y width height = mkForeign
     (FFun "%0.copyTexSubImage2D(%1, %2, %3, %4, %5, %6, %7, %8)"
@@ -172,6 +182,7 @@ copyTexSubImage2D (MkContext context) target level xoffset yoffset x y width hei
 
 ----------------------------------------------------------------------
 
+public
 createTexture : Context -> IO Texture
 createTexture (MkContext context) = map MkTexture $ mkForeign
     (FFun "%0.createTexture()"
@@ -180,6 +191,7 @@ createTexture (MkContext context) = map MkTexture $ mkForeign
 
 ----------------------------------------------------------------------
 
+public
 deleteTexture : Context -> Texture -> IO ()
 deleteTexture (MkContext context) (MkTexture texture) = mkForeign
     (FFun "%0.deleteTexture(%1)"
@@ -188,6 +200,7 @@ deleteTexture (MkContext context) (MkTexture texture) = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 generateMipmap : Context -> TextureUnitTarget -> IO ()
 generateMipmap (MkContext context) target = mkForeign
     (FFun "%0.generateMipmap(%1)"
@@ -196,6 +209,7 @@ generateMipmap (MkContext context) target = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 isTexture : Context -> Texture -> IO Bool
 isTexture (MkContext context) (MkTexture texture) = map fromGLBool $ mkForeign
     (FFun "%0.isTexture(%1)"
@@ -204,6 +218,7 @@ isTexture (MkContext context) (MkTexture texture) = map fromGLBool $ mkForeign
 
 ----------------------------------------------------------------------
 
+public
 texImage2D : Context -> TextureTarget -> Int -> TextureFormat -> Int -> Int -> Int -> TextureFormat -> PixelType -> ArrayBufferView -> IO ()
 texImage2D (MkContext context) target level internalformat width height border format type (MkArrayBufferView pixels) = mkForeign
     (FFun "%0.texImage2D(%1, %2, %3, %4, %5, %6, %7, %8, %9)"
@@ -213,17 +228,18 @@ texImage2D (MkContext context) target level internalformat width height border f
 ----------------------------------------------------------------------
 
 abstract
-    class TextureData a where
-        unpackToPtr : a -> Ptr
-    instance TextureData ImageData where
-        unpackToPtr (MkImageData dat) = dat
-    instance TextureData HTMLImageElement where
-        unpackToPtr (MkHTMLImageElement dat) = dat
-    instance TextureData HTMLCanvasElemen where
-        unpackToPtr (MkHTMLCanvasElemen dat) = dat
-    instance TextureData HTMLVideoElement where
-        unpackToPtr (MkHTMLVideoElement dat) = dat
+class TextureData a where
+    unpackToPtr : a -> Ptr
+instance TextureData ImageData where
+    unpackToPtr (MkImageData dat) = dat
+instance TextureData HTMLImageElement where
+    unpackToPtr (MkHTMLImageElement dat) = dat
+instance TextureData HTMLCanvasElemen where
+    unpackToPtr (MkHTMLCanvasElemen dat) = dat
+instance TextureData HTMLVideoElement where
+    unpackToPtr (MkHTMLVideoElement dat) = dat
 
+public
 texImage2DData : TextureData a => Context -> TextureTarget -> Int -> TextureFormat -> TextureFormat -> PixelType -> a -> IO ()
 texImage2DData (MkContext context) target level internalformat format type dat = mkForeign
     (FFun "%0.texImage2D(%1, %2, %3, %4, %5, %6)"
@@ -232,6 +248,7 @@ texImage2DData (MkContext context) target level internalformat format type dat =
 
 ----------------------------------------------------------------------
 
+public
 texParameter : Context -> TextureUnitTarget -> (pname : TextureParameter) -> interpJType (toJType pname) -> IO ()
 texParameter (MkContext context) target pname param = mkForeign
     (FFun "%0.texParameteri(%1, %2, %3)"
@@ -240,6 +257,7 @@ texParameter (MkContext context) target pname param = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 texSubImage2D : Context -> TextureTarget -> Int -> Int -> Int -> Int -> Int -> TextureFormat -> PixelType -> ArrayBufferView -> IO ()
 texSubImage2D (MkContext context) target level xoffset yoffset width height format type (MkArrayBufferView pixels) = mkForeign
     (FFun "%0.texSubImage2D(%1, %2, %3, %4, %5, %6, %7, %8, %9)"
@@ -248,6 +266,7 @@ texSubImage2D (MkContext context) target level xoffset yoffset width height form
 
 ----------------------------------------------------------------------
 
+public
 texSubImage2DData : TextureData a => Context -> TextureTarget -> Int -> Int -> Int -> TextureFormat -> PixelType -> a -> IO ()
 texSubImage2DData (MkContext context) target level xoffset yoffset format type (MkImageData pixels) = mkForeign
     (FFun "%0.texSubImage2D(%1, %2, %3, %4, %5, %6, %7)"

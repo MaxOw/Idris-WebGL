@@ -5,6 +5,7 @@ import Graphics.WebGL.Utils
 
 ----------------------------------------------------------------------
 
+public
 data PolygonMode
    = Points
    | LineStrip
@@ -33,6 +34,7 @@ instance MarshallGLEnum PolygonMode where
 
 ----------------------------------------------------------------------
 
+public
 drawArrays : Context -> PolygonMode -> Int -> Int -> IO ()
 drawArrays (MkContext context) mode first count = mkForeign
     (FFun "%0.drawArrays(%1, %2, %3)"
@@ -41,6 +43,7 @@ drawArrays (MkContext context) mode first count = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 data IndicesType
    = UnsignedByte
    | UnsignedShort
@@ -51,6 +54,7 @@ instance MarshallGLEnum IndicesType where
     fromGLEnum 0x1401 = UnsignedByte
     fromGLEnum 0x1403 = UnsignedShort
 
+public
 drawElements : Context -> PolygonMode -> Int -> IndicesType -> Int -> IO ()
 drawElements (MkContext context) mode count type offset = mkForeign
     (FFun "%0.drawElements(%1, %2, %3, %4)"

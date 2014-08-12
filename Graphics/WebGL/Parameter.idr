@@ -7,6 +7,7 @@ import Graphics.WebGL.PerFragment
 import Graphics.WebGL.Rasterization
 import Graphics.WebGL.Functions
 
+public
 data Parameter
    = ActiveTexture
    | AliasedLineWidthRange
@@ -358,6 +359,7 @@ instance MarshallToJType Parameter where
     toJType Version                         = JString
     toJType Viewport                        = JInt32Array -- 4 Int
 
+public
 getParameter : Context -> (pname : Parameter) -> IO (interpJType (toJType pname))
 getParameter (MkContext context) pname = map (unpackType (toJType pname)) $ mkForeign
     (FFun "%0.getParameter(%1)"

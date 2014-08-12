@@ -5,6 +5,7 @@ import Graphics.WebGL.Utils
 
 ----------------------------------------------------------------------
 
+public
 depthRange : Context -> Float -> Float -> IO ()
 depthRange (MkContext context) zNear zFar = mkForeign
     (FFun "%0.depthRange(%1, %2)"
@@ -13,6 +14,7 @@ depthRange (MkContext context) zNear zFar = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 scissor : Context -> Int -> Int -> Int -> Int -> IO ()
 scissor (MkContext context) x y width height = mkForeign
     (FFun "%0.scissor(%1, %2, %3, %4)"
@@ -21,6 +23,7 @@ scissor (MkContext context) x y width height = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 viewport : Context -> Int -> Int -> Int -> Int -> IO ()
 viewport (MkContext context) x y width height = mkForeign
     (FFun "%0.viewport(%1, %2, %3, %4)"

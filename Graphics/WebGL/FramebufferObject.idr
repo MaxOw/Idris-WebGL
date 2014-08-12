@@ -7,6 +7,7 @@ import Graphics.WebGL.Texture
 
 ----------------------------------------------------------------------
 
+public
 data FramebufferTarget
    = FramebufferTarget'
 
@@ -16,6 +17,7 @@ instance MarshallGLEnum FramebufferTarget where
 
 ----------------------------------------------------------------------
 
+public
 data Attachment
    = ColorAttachment Int
    | DepthAttachment
@@ -33,6 +35,7 @@ instance MarshallGLEnum Attachment where
 
 ----------------------------------------------------------------------
 
+public
 data FramebufferAttachmentParameter
    = FramebufferAttachmentObjectType
    | FramebufferAttachmentObjectName
@@ -50,6 +53,7 @@ instance MarshallGLEnum FramebufferAttachmentParameter where
     fromGLEnum 0x8CD2 = FramebufferAttachmentTextureLevel
     fromGLEnum 0x8CD3 = FramebufferAttachmentTextureCubeMapFace
 
+public
 data AttachmentObjectType
    = AttachmentNone
    | AttachmentRenderbuffer
@@ -73,6 +77,7 @@ instance MarshallToJType FramebufferAttachmentParameter where
     toJType FramebufferAttachmentTextureCubeMapFace = JEnum TextureTarget fromGLEnum toGLEnum
         -- This is slightly iffy
 
+public
 getFramebufferAttachmentParameter : Context -> FramebufferTarget -> Attachment -> (pname : FramebufferAttachmentParameter) -> IO (interpJType (toJType pname))
 getFramebufferAttachmentParameter (MkContext context) target attachment pname = map (unpackType (toJType pname)) $ mkForeign
     (FFun "%0.getFramebufferAttachmentParameter(%1, %2, %3)"
@@ -81,6 +86,7 @@ getFramebufferAttachmentParameter (MkContext context) target attachment pname = 
 
 ----------------------------------------------------------------------
 
+public
 bindFramebuffer : Context -> FramebufferTarget -> Framebuffer -> IO ()
 bindFramebuffer (MkContext context) target (MkFramebuffer framebuffer) = mkForeign
     (FFun "%0.bindFramebuffer(%1, %2)"
@@ -89,6 +95,7 @@ bindFramebuffer (MkContext context) target (MkFramebuffer framebuffer) = mkForei
 
 ----------------------------------------------------------------------
 
+public
 data FramebufferStatus
    = FramebufferComplete
    | FramebufferIncompleteAttachment
@@ -109,6 +116,7 @@ instance MarshallGLEnum FramebufferStatus where
     fromGLEnum 0x8CD9 = FramebufferIncompleteDimensions
     fromGLEnum 0x8CDD = FramebufferUnsupported
 
+public
 checkFramebufferStatus : Context -> FramebufferTarget -> IO FramebufferStatus
 checkFramebufferStatus (MkContext context) target = map fromGLEnum $ mkForeign
     (FFun "%0.checkFramebufferStatus(%1)"
@@ -117,6 +125,7 @@ checkFramebufferStatus (MkContext context) target = map fromGLEnum $ mkForeign
 
 ----------------------------------------------------------------------
 
+public
 createFramebuffer : Context -> IO Framebuffer
 createFramebuffer (MkContext context) = map MkFramebuffer $ mkForeign
     (FFun "%0.createFramebuffer()"
@@ -125,6 +134,7 @@ createFramebuffer (MkContext context) = map MkFramebuffer $ mkForeign
 
 ----------------------------------------------------------------------
 
+public
 deleteFramebuffer : Context -> Framebuffer -> IO ()
 deleteFramebuffer (MkContext context) (MkFramebuffer framebuffer) = mkForeign
     (FFun "%0.deleteFramebuffer(%1)"
@@ -133,6 +143,7 @@ deleteFramebuffer (MkContext context) (MkFramebuffer framebuffer) = mkForeign
 
 ----------------------------------------------------------------------
 
+public
 framebufferRenderbuffer : Context -> FramebufferTarget -> Attachment -> RenderbufferTarget -> Renderbuffer -> IO ()
 framebufferRenderbuffer (MkContext context) target attachment renderbuffertarget (MkRenderbuffer renderbuffer) = mkForeign
     (FFun "%0.framebufferRenderbuffer(%1, %2, %3, %4)"
@@ -141,6 +152,7 @@ framebufferRenderbuffer (MkContext context) target attachment renderbuffertarget
 
 ----------------------------------------------------------------------
 
+public
 framebufferTexture2D : Context -> FramebufferTarget -> Attachment -> TextureTarget -> Texture -> Int -> IO ()
 framebufferTexture2D (MkContext context) target attachment textarget (MkTexture texture) level = mkForeign
     (FFun "%0.framebufferTexture2D(%1, %2, %3, %4, %5)"
@@ -149,6 +161,7 @@ framebufferTexture2D (MkContext context) target attachment textarget (MkTexture 
 
 ----------------------------------------------------------------------
 
+public
 isFramebuffer : Context -> Framebuffer -> IO Bool
 isFramebuffer (MkContext context) (MkFramebuffer framebuffer) = map fromGLBool $ mkForeign
     (FFun "%0.isFramebuffer(%1)"
