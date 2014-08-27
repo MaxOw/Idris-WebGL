@@ -46,7 +46,7 @@ Now if you create a html page with this script attached and a canvas
 named "main" you should see it painted in beautiful red. How lovely.
 
 For other examples check [the examples
-folder](https://github.com/MaxOw/Idris-WebGL/tree/master/examples).
+folder](https://github.com/MaxOw/Idris-WebGL/tree/master/example).
 
 ## Documentation
 
