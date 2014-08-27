@@ -61,7 +61,7 @@ data TextureUnit = MkTextureUnit Int
 
 instance MarshallGLEnum TextureUnit where
     toGLEnum (MkTextureUnit n) = 0x84C0 + n
-    fromGLEnum n = MkTextureUnit (n - 0x84C0)
+    fromGLEnum n = Just $ MkTextureUnit (n - 0x84C0)
 
 
 public
@@ -80,7 +80,8 @@ data RenderbufferTarget
    = RenderbufferTarget'
 instance MarshallGLEnum RenderbufferTarget where
     toGLEnum RenderbufferTarget' = 0x8D41
-    fromGLEnum 0x8D41 = RenderbufferTarget'
+    fromGLEnum 0x8D41 = Just RenderbufferTarget'
+    fromGLEnum _      = Nothing
 
 public
 data ShaderType
@@ -91,8 +92,9 @@ instance MarshallGLEnum ShaderType where
     toGLEnum FragmentShader                 = 0x8B30
     toGLEnum VertexShader                   = 0x8B31
 
-    fromGLEnum 0x8B30 = FragmentShader
-    fromGLEnum 0x8B31 = VertexShader
+    fromGLEnum 0x8B30 = Just FragmentShader
+    fromGLEnum 0x8B31 = Just VertexShader
+    fromGLEnum _      = Nothing
 
 public
 data Face
@@ -105,9 +107,10 @@ instance MarshallGLEnum Face where
     toGLEnum Back                           = 0x0405
     toGLEnum FrontAndBack                   = 0x0408
 
-    fromGLEnum 0x0404 = Front
-    fromGLEnum 0x0405 = Back
-    fromGLEnum 0x0408 = FrontAndBack
+    fromGLEnum 0x0404 = Just Front
+    fromGLEnum 0x0405 = Just Back
+    fromGLEnum 0x0408 = Just FrontAndBack
+    fromGLEnum _      = Nothing
 
 public
 data PixelFormat
@@ -120,9 +123,10 @@ instance MarshallGLEnum PixelFormat where
     toGLEnum PixelFormatRGB                            = 0x1907
     toGLEnum PixelFormatRGBA                           = 0x1908
 
-    fromGLEnum 0x1906 = PixelFormatAlpha
-    fromGLEnum 0x1907 = PixelFormatRGB
-    fromGLEnum 0x1908 = PixelFormatRGBA
+    fromGLEnum 0x1906 = Just PixelFormatAlpha
+    fromGLEnum 0x1907 = Just PixelFormatRGB
+    fromGLEnum 0x1908 = Just PixelFormatRGBA
+    fromGLEnum _      = Nothing
 
 public
 data PixelType
@@ -137,10 +141,11 @@ instance MarshallGLEnum PixelType where
     toGLEnum PixelTypeUnsignedShort5551              = 0x8034
     toGLEnum PixelTypeUnsignedShort565               = 0x8363
 
-    fromGLEnum 0x1401 = PixelTypeUnsignedByte
-    fromGLEnum 0x8033 = PixelTypeUnsignedShort4444
-    fromGLEnum 0x8034 = PixelTypeUnsignedShort5551
-    fromGLEnum 0x8363 = PixelTypeUnsignedShort565
+    fromGLEnum 0x1401 = Just PixelTypeUnsignedByte
+    fromGLEnum 0x8033 = Just PixelTypeUnsignedShort4444
+    fromGLEnum 0x8034 = Just PixelTypeUnsignedShort5551
+    fromGLEnum 0x8363 = Just PixelTypeUnsignedShort565
+    fromGLEnum _      = Nothing
 
 ----------------------------------------------------------------------
 

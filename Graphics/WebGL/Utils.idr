@@ -8,18 +8,20 @@ public
 FBool : FTy
 FBool = FInt
 
-public
+public total
 toGLBool : Bool -> interpFTy FBool
 toGLBool x = if x then 1 else 0
 
-public
+public total
 fromGLBool : interpFTy FBool -> Bool
 fromGLBool x = x /= 0
 
 public
 class MarshallGLEnum a where
+    total
     toGLEnum : a -> interpFTy FEnum
-    fromGLEnum : interpFTy FEnum -> a
+    total
+    fromGLEnum : interpFTy FEnum -> Maybe a
 
 ----------------------------------------------------------------------
 

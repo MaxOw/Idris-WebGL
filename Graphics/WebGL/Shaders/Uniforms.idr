@@ -24,50 +24,6 @@ getUniformLocation (MkContext context) (MkProgram program) name = map MkUniformL
 
 ----------------------------------------------------------------------
 
-{-
-
--- This should be done something like this
-
-class UniformType a where
-    uniform : Context -> UniformLocation -> a -> IO ()
-    getUniform : Context -> UniformLocation -> IO (Maybe a)
-
-instance UniformType (Vec 1 Float) where
-instance UniformType (Vec 2 Float) where
-instance UniformType (Vec 3 Float) where
-instance UniformType (Vec 4 Float) where
-
-instance UniformType (List (Vec 1 Float)) where
-instance UniformType (List (Vec 2 Float)) where
-instance UniformType (List (Vec 3 Float)) where
-instance UniformType (List (Vec 4 Float)) where
-
-instance UniformType (Vec 1 Int) where
-instance UniformType (Vec 2 Int) where
-instance UniformType (Vec 3 Int) where
-instance UniformType (Vec 4 Int) where
-
-instance UniformType (List (Vec 1 Int)) where
-instance UniformType (List (Vec 2 Int)) where
-instance UniformType (List (Vec 3 Int)) where
-instance UniformType (List (Vec 4 Int)) where
-
-instance UniformType (Mat 2 2 Float) where
-instance UniformType (Mat 3 3 Float) where
-instance UniformType (Mat 4 4 Float) where
--}
-
-----------------------------------------------------------------------
-
-{-
-getUniform : Context -> Program -> UniformLocation -> IO (interpJType (toJType pname))
-getUniform (MkContext context) (MkProgram program) (MkUniformLocation location) = map (unpackType (toJType pname)) $ mkForeign
-    (FFun "%0.getUniform(%1, %2)"
-    [FPtr, FPtr, FPtr] (toFType (toJType pname)))
-    context program location
--}
-
-----------------------------------------------------------------------
 
 public
 uniform1f : Context -> UniformLocation -> Float -> IO ()
@@ -312,3 +268,61 @@ uniformMatrix4fva (MkContext context) (MkUniformLocation location) transpose (Mk
     (FFun "%0.uniformMatrix4fv(%1, %2, %3)"
     [FPtr, FPtr, FBool, FPtr] FUnit)
     context location (toGLBool transpose) value
+
+----------------------------------------------------------------------
+
+public
+class Uniform a where
+    uniform : Context -> UniformLocation -> a -> IO ()
+    -- getUniform : Context -> UniformLocation -> IO (Maybe a)
+
+instance Uniform Float where
+    uniform c l x = uniform1f c l x
+
+instance Uniform (Vect 1 Float) where
+    uniform c l [x] = uniform1f c l x
+instance Uniform (Vect 2 Float) where
+    uniform c l [x, y] = uniform2f c l x y
+instance Uniform (Vect 3 Float) where
+    uniform c l [x, y, z] = uniform3f c l x y z
+instance Uniform (Vect 4 Float) where
+    uniform c l [x, y, z, w] = uniform4f c l x y z w
+
+instance Uniform Int where
+    uniform c l x = uniform1i c l x
+
+instance Uniform (Vect 1 Int) where
+    uniform c l [x] = uniform1i c l x
+instance Uniform (Vect 2 Int) where
+    uniform c l [x, y] = uniform2i c l x y
+instance Uniform (Vect 3 Int) where
+    uniform c l [x, y, z] = uniform3i c l x y z
+instance Uniform (Vect 4 Int) where
+    uniform c l [x, y, z, w] = uniform4i c l x y z w
+
+{-
+instance Uniform (List (Vect 1 Float)) where
+instance Uniform (List (Vect 2 Float)) where
+instance Uniform (List (Vect 3 Float)) where
+instance Uniform (List (Vect 4 Float)) where
+
+instance Uniform (List (Vect 1 Int)) where
+instance Uniform (List (Vect 2 Int)) where
+instance Uniform (List (Vect 3 Int)) where
+instance Uniform (List (Vect 4 Int)) where
+
+instance Uniform (Mat 2 2 Float) where
+instance Uniform (Mat 3 3 Float) where
+instance Uniform (Mat 4 4 Float) where
+-}
+
+----------------------------------------------------------------------
+
+{-
+getUniform : Context -> Program -> UniformLocation -> IO (interpJRetType (toJType pname))
+getUniform (MkContext context) (MkProgram program) (MkUniformLocation location) = map (unpackType pname) $ mkForeign
+    (FFun "%0.getUniform(%1, %2)"
+    [FPtr, FPtr, FPtr] (JTypeToFType pname))
+    context program location
+-}
+

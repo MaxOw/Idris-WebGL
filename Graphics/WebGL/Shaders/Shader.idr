@@ -17,9 +17,10 @@ instance MarshallGLEnum ShaderParameter where
     toGLEnum DeleteStatus' = 0x8B80
     toGLEnum CompileStatus = 0x8B81
 
-    fromGLEnum 0x8B4F = ShaderType
-    fromGLEnum 0x8B80 = DeleteStatus'
-    fromGLEnum 0x8B81 = CompileStatus
+    fromGLEnum 0x8B4F = Just ShaderType
+    fromGLEnum 0x8B80 = Just DeleteStatus'
+    fromGLEnum 0x8B81 = Just CompileStatus
+    fromGLEnum _      = Nothing
 
 instance MarshallToJType ShaderParameter where
     toJType ShaderType    = JEnum ShaderType fromGLEnum toGLEnum
@@ -29,11 +30,11 @@ instance MarshallToJType ShaderParameter where
 ----------------------------------------------------------------------
 
 public
-getShaderParameter : Context -> Shader -> (pname : ShaderParameter) -> IO (interpJType (toJType pname))
+getShaderParameter : Context -> Shader -> (pname : ShaderParameter) -> IO (interpJRetType (toJType pname))
 getShaderParameter (MkContext context) (MkShader shader) pname =
-    map (unpackType (toJType pname)) $ mkForeign
+    map (unpackType pname) $ mkForeign
     (FFun "%0.getShaderParameter(%1, %2)"
-    [FPtr, FPtr, FEnum] (toFType (toJType pname)))
+    [FPtr, FPtr, FEnum] (JTypeToFType pname))
     context shader (toGLEnum pname)
 
 ----------------------------------------------------------------------

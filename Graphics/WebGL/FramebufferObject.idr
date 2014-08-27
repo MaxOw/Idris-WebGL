@@ -13,7 +13,8 @@ data FramebufferTarget
 
 instance MarshallGLEnum FramebufferTarget where
     toGLEnum FramebufferTarget' = 0x8D40
-    fromGLEnum 0x8D40 = FramebufferTarget'
+    fromGLEnum 0x8D40 = Just FramebufferTarget'
+    fromGLEnum _      = Nothing
 
 ----------------------------------------------------------------------
 
@@ -28,10 +29,11 @@ instance MarshallGLEnum Attachment where
     toGLEnum DepthAttachment                = 0x8D00
     toGLEnum StencilAttachment              = 0x8D20
     -- toGLEnum DepthStencilAttachment         = 0x821A
-    fromGLEnum n = ColorAttachment (n - 0x8CE0)
-    fromGLEnum 0x8D00 = DepthAttachment
-    fromGLEnum 0x8D20 = StencilAttachment
-    -- fromGLEnum 0x821A = DepthStencilAttachment
+    fromGLEnum 0x8D00 = Just DepthAttachment
+    fromGLEnum 0x8D20 = Just StencilAttachment
+    -- fromGLEnum 0x821A = Just DepthStencilAttachment
+    fromGLEnum n      = Just $ ColorAttachment (n - 0x8CE0)
+    -- fromGLEnum _      = Nothing
 
 ----------------------------------------------------------------------
 
@@ -48,10 +50,11 @@ instance MarshallGLEnum FramebufferAttachmentParameter where
     toGLEnum FramebufferAttachmentTextureLevel = 0x8CD2
     toGLEnum FramebufferAttachmentTextureCubeMapFace = 0x8CD3
 
-    fromGLEnum 0x8CD0 = FramebufferAttachmentObjectType
-    fromGLEnum 0x8CD1 = FramebufferAttachmentObjectName
-    fromGLEnum 0x8CD2 = FramebufferAttachmentTextureLevel
-    fromGLEnum 0x8CD3 = FramebufferAttachmentTextureCubeMapFace
+    fromGLEnum 0x8CD0 = Just FramebufferAttachmentObjectType
+    fromGLEnum 0x8CD1 = Just FramebufferAttachmentObjectName
+    fromGLEnum 0x8CD2 = Just FramebufferAttachmentTextureLevel
+    fromGLEnum 0x8CD3 = Just FramebufferAttachmentTextureCubeMapFace
+    fromGLEnum _      = Nothing
 
 public
 data AttachmentObjectType
@@ -64,9 +67,10 @@ instance MarshallGLEnum AttachmentObjectType where
     toGLEnum AttachmentRenderbuffer = 0x8D41
     toGLEnum AttachmentTexture = 0x1702
 
-    fromGLEnum 0      = AttachmentNone
-    fromGLEnum 0x8D41 = AttachmentRenderbuffer
-    fromGLEnum 0x1702 = AttachmentTexture
+    fromGLEnum 0      = Just AttachmentNone
+    fromGLEnum 0x8D41 = Just AttachmentRenderbuffer
+    fromGLEnum 0x1702 = Just AttachmentTexture
+    fromGLEnum _      = Nothing
 
 instance MarshallToJType FramebufferAttachmentParameter where
     toJType FramebufferAttachmentObjectType         = JEnum AttachmentObjectType fromGLEnum toGLEnum
@@ -78,20 +82,22 @@ instance MarshallToJType FramebufferAttachmentParameter where
         -- This is slightly iffy
 
 public
-getFramebufferAttachmentParameter : Context -> FramebufferTarget -> Attachment -> (pname : FramebufferAttachmentParameter) -> IO (interpJType (toJType pname))
-getFramebufferAttachmentParameter (MkContext context) target attachment pname = map (unpackType (toJType pname)) $ mkForeign
+getFramebufferAttachmentParameter : Context -> FramebufferTarget -> Attachment -> (pname : FramebufferAttachmentParameter) -> IO (interpJRetType (toJType pname))
+getFramebufferAttachmentParameter (MkContext context) target attachment pname = map (unpackType pname) $ mkForeign
     (FFun "%0.getFramebufferAttachmentParameter(%1, %2, %3)"
-    [FPtr, FEnum, FEnum, FEnum] (toFType (toJType pname)))
+    [FPtr, FEnum, FEnum, FEnum] (JTypeToFType pname))
     context (toGLEnum target) (toGLEnum attachment) (toGLEnum pname)
 
 ----------------------------------------------------------------------
 
 public
-bindFramebuffer : Context -> FramebufferTarget -> Framebuffer -> IO ()
-bindFramebuffer (MkContext context) target (MkFramebuffer framebuffer) = mkForeign
+bindFramebuffer : Context -> FramebufferTarget -> Maybe Framebuffer -> IO ()
+bindFramebuffer (MkContext context) target mfb = mkForeign
     (FFun "%0.bindFramebuffer(%1, %2)"
     [FPtr, FEnum, FPtr] FUnit)
     context (toGLEnum target) framebuffer
+    where
+    framebuffer = (maybe null (\(MkFramebuffer f) => f) mfb)
 
 ----------------------------------------------------------------------
 
@@ -110,14 +116,15 @@ instance MarshallGLEnum FramebufferStatus where
     toGLEnum FramebufferIncompleteDimensions        = 0x8CD9
     toGLEnum FramebufferUnsupported                 = 0x8CDD
 
-    fromGLEnum 0x8CD5 = FramebufferComplete
-    fromGLEnum 0x8CD6 = FramebufferIncompleteAttachment
-    fromGLEnum 0x8CD7 = FramebufferIncompleteMissingAttachment
-    fromGLEnum 0x8CD9 = FramebufferIncompleteDimensions
-    fromGLEnum 0x8CDD = FramebufferUnsupported
+    fromGLEnum 0x8CD5 = Just FramebufferComplete
+    fromGLEnum 0x8CD6 = Just FramebufferIncompleteAttachment
+    fromGLEnum 0x8CD7 = Just FramebufferIncompleteMissingAttachment
+    fromGLEnum 0x8CD9 = Just FramebufferIncompleteDimensions
+    fromGLEnum 0x8CDD = Just FramebufferUnsupported
+    fromGLEnum _      = Nothing
 
 public
-checkFramebufferStatus : Context -> FramebufferTarget -> IO FramebufferStatus
+checkFramebufferStatus : Context -> FramebufferTarget -> IO (Maybe FramebufferStatus)
 checkFramebufferStatus (MkContext context) target = map fromGLEnum $ mkForeign
     (FFun "%0.checkFramebufferStatus(%1)"
     [FPtr, FEnum] FEnum)

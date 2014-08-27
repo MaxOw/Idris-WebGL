@@ -21,12 +21,13 @@ instance MarshallGLEnum ProgramParameter where
     toGLEnum ActiveAttributes = 0x8B89
     toGLEnum ActiveUniforms   = 0x8B86
 
-    fromGLEnum 0x8B80 = DeleteStatus
-    fromGLEnum 0x8B82 = LinkStatus
-    fromGLEnum 0x8B83 = ValidateStatus
-    fromGLEnum 0x8B85 = AttachedShaders
-    fromGLEnum 0x8B89 = ActiveAttributes
-    fromGLEnum 0x8B86 = ActiveUniforms
+    fromGLEnum 0x8B80 = Just DeleteStatus
+    fromGLEnum 0x8B82 = Just LinkStatus
+    fromGLEnum 0x8B83 = Just ValidateStatus
+    fromGLEnum 0x8B85 = Just AttachedShaders
+    fromGLEnum 0x8B89 = Just ActiveAttributes
+    fromGLEnum 0x8B86 = Just ActiveUniforms
+    fromGLEnum _      = Nothing
 
 instance MarshallToJType ProgramParameter where
     toJType DeleteStatus     = JBool
@@ -39,10 +40,10 @@ instance MarshallToJType ProgramParameter where
 ----------------------------------------------------------------------
 
 public
-getProgramParameter : Context -> Program -> (pname : ProgramParameter) -> IO (interpJType (toJType pname))
-getProgramParameter (MkContext context) (MkProgram program) pname = map (unpackType (toJType pname)) $ mkForeign
+getProgramParameter : Context -> Program -> (pname : ProgramParameter) -> IO (interpJRetType (toJType pname))
+getProgramParameter (MkContext context) (MkProgram program) pname = map (unpackType pname) $ mkForeign
     (FFun "%0.getProgramParameter(%1, %2)"
-    [FPtr, FPtr, FEnum] (toFType (toJType pname)))
+    [FPtr, FPtr, FEnum] (JTypeToFType pname))
     context program (toGLEnum pname)
 
 ----------------------------------------------------------------------

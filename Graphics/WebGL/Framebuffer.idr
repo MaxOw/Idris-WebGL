@@ -22,7 +22,7 @@ bitToInt ColorBuffer   = 0x00004000
 
 instance MarshallGLEnum (List BufferBit) where
     toGLEnum = foldl (.|.) 0 . map bitToInt
-    fromGLEnum n = filter (\a => n .&. bitToInt a /= 0)
+    fromGLEnum n = Just $ filter (\a => n .&. bitToInt a /= 0)
                  [ DepthBuffer, StencilBuffer, ColorBuffer ]
 
 public

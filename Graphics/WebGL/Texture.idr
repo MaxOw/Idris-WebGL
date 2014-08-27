@@ -15,8 +15,9 @@ instance MarshallGLEnum TextureUnitTarget where
     toGLEnum Texture2D                      = 0x0DE1
     toGLEnum TextureCubeMap                 = 0x8513
 
-    fromGLEnum 0x0DE1 = Texture2D
-    fromGLEnum 0x8513 = TextureCubeMap
+    fromGLEnum 0x0DE1 = Just Texture2D
+    fromGLEnum 0x8513 = Just TextureCubeMap
+    fromGLEnum _      = Nothing
 
 ----------------------------------------------------------------------
 
@@ -39,13 +40,14 @@ instance MarshallGLEnum TextureTarget where
     toGLEnum TextureCubeMapPositiveZ        = 0x8519
     toGLEnum TextureCubeMapNegativeZ        = 0x851A
 
-    fromGLEnum 0x0DE1 = Texture2D'
-    fromGLEnum 0x8515 = TextureCubeMapPositiveX
-    fromGLEnum 0x8516 = TextureCubeMapNegativeX
-    fromGLEnum 0x8517 = TextureCubeMapPositiveY
-    fromGLEnum 0x8518 = TextureCubeMapNegativeY
-    fromGLEnum 0x8519 = TextureCubeMapPositiveZ
-    fromGLEnum 0x851A = TextureCubeMapNegativeZ
+    fromGLEnum 0x0DE1 = Just Texture2D'
+    fromGLEnum 0x8515 = Just TextureCubeMapPositiveX
+    fromGLEnum 0x8516 = Just TextureCubeMapNegativeX
+    fromGLEnum 0x8517 = Just TextureCubeMapPositiveY
+    fromGLEnum 0x8518 = Just TextureCubeMapNegativeY
+    fromGLEnum 0x8519 = Just TextureCubeMapPositiveZ
+    fromGLEnum 0x851A = Just TextureCubeMapNegativeZ
+    fromGLEnum _      = Nothing
 
 ----------------------------------------------------------------------
 
@@ -64,11 +66,12 @@ instance MarshallGLEnum TextureFormat where
     toGLEnum TextureLuminance                      = 0x1909
     toGLEnum TextureLuminanceAlpha                 = 0x190A
 
-    fromGLEnum 0x1906 = TextureAlpha
-    fromGLEnum 0x1907 = TextureRGB
-    fromGLEnum 0x1908 = TextureRGBA
-    fromGLEnum 0x1909 = TextureLuminance
-    fromGLEnum 0x190A = TextureLuminanceAlpha
+    fromGLEnum 0x1906 = Just TextureAlpha
+    fromGLEnum 0x1907 = Just TextureRGB
+    fromGLEnum 0x1908 = Just TextureRGBA
+    fromGLEnum 0x1909 = Just TextureLuminance
+    fromGLEnum 0x190A = Just TextureLuminanceAlpha
+    fromGLEnum _      = Nothing
 
 ----------------------------------------------------------------------
 
@@ -85,10 +88,11 @@ instance MarshallGLEnum TextureParameter where
     toGLEnum TextureWrapS                   = 0x2802
     toGLEnum TextureWrapT                   = 0x2803
 
-    fromGLEnum 0x2800 = TextureMagFilter
-    fromGLEnum 0x2801 = TextureMinFilter
-    fromGLEnum 0x2802 = TextureWrapS
-    fromGLEnum 0x2803 = TextureWrapT
+    fromGLEnum 0x2800 = Just TextureMagFilter
+    fromGLEnum 0x2801 = Just TextureMinFilter
+    fromGLEnum 0x2802 = Just TextureWrapS
+    fromGLEnum 0x2803 = Just TextureWrapT
+    fromGLEnum _      = Nothing
 
 public
 data TextureFilter
@@ -107,12 +111,13 @@ instance MarshallGLEnum TextureFilter where
     toGLEnum NearestMipmapLinear            = 0x2702
     toGLEnum LinearMipmapLinear             = 0x2703
 
-    fromGLEnum 0x2600 = Nearest
-    fromGLEnum 0x2601 = Linear
-    fromGLEnum 0x2700 = NearestMipmapNearest
-    fromGLEnum 0x2701 = LinearMipmapNearest
-    fromGLEnum 0x2702 = NearestMipmapLinear
-    fromGLEnum 0x2703 = LinearMipmapLinear
+    fromGLEnum 0x2600 = Just Nearest
+    fromGLEnum 0x2601 = Just Linear
+    fromGLEnum 0x2700 = Just NearestMipmapNearest
+    fromGLEnum 0x2701 = Just LinearMipmapNearest
+    fromGLEnum 0x2702 = Just NearestMipmapLinear
+    fromGLEnum 0x2703 = Just LinearMipmapLinear
+    fromGLEnum _      = Nothing
 
 public
 data TextureWrapMode
@@ -125,9 +130,10 @@ instance MarshallGLEnum TextureWrapMode where
     toGLEnum ClampToEdge                    = 0x812F
     toGLEnum MirroredRepeat                 = 0x8370
 
-    fromGLEnum 0x2901 = Repeat
-    fromGLEnum 0x812F = ClampToEdge
-    fromGLEnum 0x8370 = MirroredRepeat
+    fromGLEnum 0x2901 = Just Repeat
+    fromGLEnum 0x812F = Just ClampToEdge
+    fromGLEnum 0x8370 = Just MirroredRepeat
+    fromGLEnum _      = Nothing
 
 instance MarshallToJType TextureParameter where
     toJType TextureMagFilter = JEnum TextureFilter fromGLEnum toGLEnum
@@ -138,10 +144,10 @@ instance MarshallToJType TextureParameter where
 ----------------------------------------------------------------------
 
 public
-getTexParameter : Context -> TextureUnitTarget -> (pname : TextureParameter) -> IO (interpJType (toJType pname))
-getTexParameter (MkContext context) target pname = map (unpackType (toJType pname)) $ mkForeign
+getTexParameter : Context -> TextureUnitTarget -> (pname : TextureParameter) -> IO (interpJRetType (toJType pname))
+getTexParameter (MkContext context) target pname = map (unpackType pname) $ mkForeign
     (FFun "%0.getTexParameter(%1, %2)"
-    [FPtr, FEnum, FEnum] (toFType (toJType pname)))
+    [FPtr, FEnum, FEnum] (JTypeToFType pname))
     context (toGLEnum target) (toGLEnum pname)
 
 ----------------------------------------------------------------------
@@ -230,6 +236,8 @@ texImage2D (MkContext context) target level internalformat width height border f
 abstract
 class TextureData a where
     unpackToPtr : a -> Ptr
+instance TextureData () where
+    unpackToPtr () = null
 instance TextureData ImageData where
     unpackToPtr (MkImageData dat) = dat
 instance TextureData HTMLImageElement where
@@ -252,8 +260,8 @@ public
 texParameter : Context -> TextureUnitTarget -> (pname : TextureParameter) -> interpJType (toJType pname) -> IO ()
 texParameter (MkContext context) target pname param = mkForeign
     (FFun "%0.texParameteri(%1, %2, %3)"
-    [FPtr, FEnum, FEnum, toFType (toJType pname)] FUnit)
-    context (toGLEnum target) (toGLEnum pname) (packType (toJType pname) param)
+    [FPtr, FEnum, FEnum, JTypeToFType pname] FUnit)
+    context (toGLEnum target) (toGLEnum pname) (packType pname param)
 
 ----------------------------------------------------------------------
 

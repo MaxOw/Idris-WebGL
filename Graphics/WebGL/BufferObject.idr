@@ -13,8 +13,9 @@ data BufferTarget
 instance MarshallGLEnum BufferTarget where
     toGLEnum ArrayBufferTarget              = 0x8892
     toGLEnum ElementArrayBufferTarget       = 0x8893
-    fromGLEnum 0x8892 = ArrayBufferTarget
-    fromGLEnum 0x8893 = ElementArrayBufferTarget
+    fromGLEnum 0x8892 = Just ArrayBufferTarget
+    fromGLEnum 0x8893 = Just ElementArrayBufferTarget
+    fromGLEnum _      = Nothing
 
 ----------------------------------------------------------------------
 
@@ -29,9 +30,10 @@ instance MarshallGLEnum BufferUsage where
     toGLEnum StaticDraw                     = 0x88E4
     toGLEnum DynamicDraw                    = 0x88E8
 
-    fromGLEnum 0x88E0 = StreamDraw
-    fromGLEnum 0x88E4 = StaticDraw
-    fromGLEnum 0x88E8 = DynamicDraw
+    fromGLEnum 0x88E0 = Just StreamDraw
+    fromGLEnum 0x88E4 = Just StaticDraw
+    fromGLEnum 0x88E8 = Just DynamicDraw
+    fromGLEnum _      = Nothing
 
 ----------------------------------------------------------------------
 
@@ -108,19 +110,20 @@ instance MarshallGLEnum BufferParameter where
     toGLEnum BufferSize                     = 0x8764
     toGLEnum BufferUsage'                   = 0x8765
 
-    fromGLEnum 0x8764 = BufferSize
-    fromGLEnum 0x8765 = BufferUsage'
+    fromGLEnum 0x8764 = Just BufferSize
+    fromGLEnum 0x8765 = Just BufferUsage'
+    fromGLEnum _      = Nothing
 
 instance MarshallToJType BufferParameter where
     toJType BufferSize   = JInt
     toJType BufferUsage' = JEnum BufferUsage fromGLEnum toGLEnum
 
 public
-getBufferParameter : Context -> BufferTarget -> (pname : BufferParameter) -> IO (interpJType (toJType pname))
+getBufferParameter : Context -> BufferTarget -> (pname : BufferParameter) -> IO (interpJRetType (toJType pname))
 getBufferParameter (MkContext context) target pname = 
-    map (unpackType (toJType pname)) $ mkForeign
+    map (unpackType pname) $ mkForeign
     (FFun "%0.getBufferParameter(%1, %2)"
-    [FPtr, FEnum, FEnum] (toFType (toJType pname)))
+    [FPtr, FEnum, FEnum] (JTypeToFType pname))
     context (toGLEnum target) (toGLEnum pname)
 
 ----------------------------------------------------------------------

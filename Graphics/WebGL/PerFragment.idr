@@ -27,9 +27,10 @@ instance MarshallGLEnum BlendEquation where
     toGLEnum FuncSubtract                   = 0x800A
     toGLEnum FuncReverseSubtract            = 0x800B
 
-    fromGLEnum 0x8006 = FuncAdd
-    fromGLEnum 0x800A = FuncSubtract
-    fromGLEnum 0x800B = FuncReverseSubtract
+    fromGLEnum 0x8006 = Just FuncAdd
+    fromGLEnum 0x800A = Just FuncSubtract
+    fromGLEnum 0x800B = Just FuncReverseSubtract
+    fromGLEnum _      = Nothing
 
 public
 blendEquation : Context -> BlendEquation -> IO ()
@@ -75,21 +76,22 @@ instance MarshallGLEnum BlendFunc where
     toGLEnum ConstantAlpha                  = 0x8003
     toGLEnum OneMinusConstantAlpha          = 0x8004
 
-    fromGLEnum 0 = Zero
-    fromGLEnum 1 = One
-    fromGLEnum 0x0300 = SrcColor
-    fromGLEnum 0x0301 = OneMinusSrcColor
-    fromGLEnum 0x0302 = SrcAlpha
-    fromGLEnum 0x0303 = OneMinusSrcAlpha
-    fromGLEnum 0x0304 = DstAlpha
-    fromGLEnum 0x0305 = OneMinusDstAlpha
-    fromGLEnum 0x0306 = DstColor
-    fromGLEnum 0x0307 = OneMinusDstColor
-    fromGLEnum 0x0308 = SrcAlphaSaturate
-    fromGLEnum 0x8001 = ConstantColor
-    fromGLEnum 0x8002 = OneMinusConstantColor
-    fromGLEnum 0x8003 = ConstantAlpha
-    fromGLEnum 0x8004 = OneMinusConstantAlpha
+    fromGLEnum 0 = Just Zero
+    fromGLEnum 1 = Just One
+    fromGLEnum 0x0300 = Just SrcColor
+    fromGLEnum 0x0301 = Just OneMinusSrcColor
+    fromGLEnum 0x0302 = Just SrcAlpha
+    fromGLEnum 0x0303 = Just OneMinusSrcAlpha
+    fromGLEnum 0x0304 = Just DstAlpha
+    fromGLEnum 0x0305 = Just OneMinusDstAlpha
+    fromGLEnum 0x0306 = Just DstColor
+    fromGLEnum 0x0307 = Just OneMinusDstColor
+    fromGLEnum 0x0308 = Just SrcAlphaSaturate
+    fromGLEnum 0x8001 = Just ConstantColor
+    fromGLEnum 0x8002 = Just OneMinusConstantColor
+    fromGLEnum 0x8003 = Just ConstantAlpha
+    fromGLEnum 0x8004 = Just OneMinusConstantAlpha
+    fromGLEnum _      = Nothing
 
 public
 blendEquationSeparate : Context -> BlendEquation -> BlendEquation -> IO ()
@@ -139,14 +141,15 @@ instance MarshallGLEnum RelationFunc where
     toGLEnum GEqual                         = 0x0206
     toGLEnum Always                         = 0x0207
 
-    fromGLEnum 0x0200 = Never
-    fromGLEnum 0x0201 = Less
-    fromGLEnum 0x0202 = Equal
-    fromGLEnum 0x0203 = LEqual
-    fromGLEnum 0x0204 = Greater
-    fromGLEnum 0x0205 = NotEqual
-    fromGLEnum 0x0206 = GEqual
-    fromGLEnum 0x0207 = Always
+    fromGLEnum 0x0200 = Just Never
+    fromGLEnum 0x0201 = Just Less
+    fromGLEnum 0x0202 = Just Equal
+    fromGLEnum 0x0203 = Just LEqual
+    fromGLEnum 0x0204 = Just Greater
+    fromGLEnum 0x0205 = Just NotEqual
+    fromGLEnum 0x0206 = Just GEqual
+    fromGLEnum 0x0207 = Just Always
+    fromGLEnum _      = Nothing
 
 public
 depthFunc : Context -> RelationFunc -> IO ()
@@ -205,14 +208,15 @@ instance MarshallGLEnum StencilOp where
     toGLEnum OpIncrWrap                       = 0x8507
     toGLEnum OpDecrWrap                       = 0x8508
 
-    fromGLEnum 0      = OpZero
-    fromGLEnum 0x1E00 = OpKeep
-    fromGLEnum 0x1E01 = OpReplace
-    fromGLEnum 0x1E02 = OpIncr
-    fromGLEnum 0x1E03 = OpDecr
-    fromGLEnum 0x150A = OpInvert
-    fromGLEnum 0x8507 = OpIncrWrap
-    fromGLEnum 0x8508 = OpDecrWrap
+    fromGLEnum 0      = Just OpZero
+    fromGLEnum 0x1E00 = Just OpKeep
+    fromGLEnum 0x1E01 = Just OpReplace
+    fromGLEnum 0x1E02 = Just OpIncr
+    fromGLEnum 0x1E03 = Just OpDecr
+    fromGLEnum 0x150A = Just OpInvert
+    fromGLEnum 0x8507 = Just OpIncrWrap
+    fromGLEnum 0x8508 = Just OpDecrWrap
+    fromGLEnum _      = Nothing
 
 public
 stencilOp : Context -> StencilOp -> StencilOp -> StencilOp -> IO ()

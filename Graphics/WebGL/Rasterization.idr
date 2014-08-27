@@ -23,8 +23,9 @@ instance MarshallGLEnum FrontFaceMode where
     toGLEnum ClockWise                      = 0x0900
     toGLEnum CounterClockWise               = 0x0901
 
-    fromGLEnum 0x0900 = ClockWise
-    fromGLEnum 0x0901 = CounterClockWise
+    fromGLEnum 0x0900 = Just ClockWise
+    fromGLEnum 0x0901 = Just CounterClockWise
+    fromGLEnum _      = Nothing
 
 public
 frontFace : Context -> FrontFaceMode -> IO ()

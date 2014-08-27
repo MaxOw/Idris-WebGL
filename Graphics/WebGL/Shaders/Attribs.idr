@@ -25,13 +25,14 @@ instance MarshallGLEnum VertexAttribParameter where
     toGLEnum VertexAttribArrayNormalized     = 0x886A
     toGLEnum CurrentVertexAttrib             = 0x8626
 
-    fromGLEnum 0x889F = VertexAttribArrayBufferBinding
-    fromGLEnum 0x8622 = VertexAttribArrayEnabled
-    fromGLEnum 0x8623 = VertexAttribArraySize
-    fromGLEnum 0x8624 = VertexAttribArrayStride
-    fromGLEnum 0x8625 = VertexAttribArrayType
-    fromGLEnum 0x886A = VertexAttribArrayNormalized
-    fromGLEnum 0x8626 = CurrentVertexAttrib
+    fromGLEnum 0x889F = Just VertexAttribArrayBufferBinding
+    fromGLEnum 0x8622 = Just VertexAttribArrayEnabled
+    fromGLEnum 0x8623 = Just VertexAttribArraySize
+    fromGLEnum 0x8624 = Just VertexAttribArrayStride
+    fromGLEnum 0x8625 = Just VertexAttribArrayType
+    fromGLEnum 0x886A = Just VertexAttribArrayNormalized
+    fromGLEnum 0x8626 = Just CurrentVertexAttrib
+    fromGLEnum _      = Nothing
 
 public
 data VertexAttribType
@@ -52,13 +53,14 @@ instance MarshallGLEnum VertexAttribType where
     toGLEnum AttribUnsignedInt                    = 0x1405
     toGLEnum AttribFloat                          = 0x1406
 
-    fromGLEnum 0x1400 = AttribByte
-    fromGLEnum 0x1401 = AttribUnsignedByte
-    fromGLEnum 0x1402 = AttribShort
-    fromGLEnum 0x1403 = AttribUnsignedShort
-    fromGLEnum 0x1404 = AttribInt
-    fromGLEnum 0x1405 = AttribUnsignedInt
-    fromGLEnum 0x1406 = AttribFloat
+    fromGLEnum 0x1400 = Just AttribByte
+    fromGLEnum 0x1401 = Just AttribUnsignedByte
+    fromGLEnum 0x1402 = Just AttribShort
+    fromGLEnum 0x1403 = Just AttribUnsignedShort
+    fromGLEnum 0x1404 = Just AttribInt
+    fromGLEnum 0x1405 = Just AttribUnsignedInt
+    fromGLEnum 0x1406 = Just AttribFloat
+    fromGLEnum _      = Nothing
 
 instance MarshallToJType VertexAttribParameter where
     toJType VertexAttribArrayBufferBinding  = JBuffer
@@ -72,11 +74,11 @@ instance MarshallToJType VertexAttribParameter where
 ----------------------------------------------------------------------
 
 public
-getVertexAttrib : Context -> Int -> (pname : VertexAttribParameter) -> IO (interpJType (toJType pname))
+getVertexAttrib : Context -> Int -> (pname : VertexAttribParameter) -> IO (interpJRetType (toJType pname))
 getVertexAttrib (MkContext context) index pname =
-    map (unpackType (toJType pname)) $ mkForeign
+    map (unpackType pname) $ mkForeign
     (FFun "%0.getVertexAttrib(%1, %2)"
-    [FPtr, FInt, FEnum] (toFType (toJType pname)))
+    [FPtr, FInt, FEnum] (JTypeToFType pname))
     context index (toGLEnum pname)
 
 ----------------------------------------------------------------------
@@ -123,17 +125,6 @@ getAttribLocation (MkContext context) (MkProgram program) name = mkForeign
     (FFun "%0.getAttribLocation(%1, %2)"
     [FPtr, FPtr, FString] FInt)
     context program name
-
-----------------------------------------------------------------------
-
-{-
-public
-setVertexPosAttrib : Program -> Int -> IO ()
-setVertexPosAttrib (MkProgram program) loc = mkForeign
-    (FFun "%0.getVertexPosAttrib = %1"
-    [FPtr, FInt] FUnit)
-    program loc
--}
 
 ----------------------------------------------------------------------
 

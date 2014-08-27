@@ -24,13 +24,14 @@ instance MarshallGLEnum PolygonMode where
     toGLEnum TriangleStrip                  = 0x0005
     toGLEnum TriangleFan                    = 0x0006
 
-    fromGLEnum 0x0000 = Points
-    fromGLEnum 0x0001 = Lines
-    fromGLEnum 0x0002 = LineLoop
-    fromGLEnum 0x0003 = LineStrip
-    fromGLEnum 0x0004 = Triangles
-    fromGLEnum 0x0005 = TriangleStrip
-    fromGLEnum 0x0006 = TriangleFan
+    fromGLEnum 0x0000 = Just Points
+    fromGLEnum 0x0001 = Just Lines
+    fromGLEnum 0x0002 = Just LineLoop
+    fromGLEnum 0x0003 = Just LineStrip
+    fromGLEnum 0x0004 = Just Triangles
+    fromGLEnum 0x0005 = Just TriangleStrip
+    fromGLEnum 0x0006 = Just TriangleFan
+    fromGLEnum _      = Nothing
 
 ----------------------------------------------------------------------
 
@@ -51,8 +52,9 @@ instance MarshallGLEnum IndicesType where
     toGLEnum UnsignedByte                   = 0x1401
     toGLEnum UnsignedShort                  = 0x1403
 
-    fromGLEnum 0x1401 = UnsignedByte
-    fromGLEnum 0x1403 = UnsignedShort
+    fromGLEnum 0x1401 = Just UnsignedByte
+    fromGLEnum 0x1403 = Just UnsignedShort
+    fromGLEnum _      = Nothing
 
 public
 drawElements : Context -> PolygonMode -> Int -> IndicesType -> Int -> IO ()

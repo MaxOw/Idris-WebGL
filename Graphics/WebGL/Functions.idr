@@ -111,15 +111,16 @@ instance MarshallGLEnum Capability where
     toGLEnum SampleAlphaToCoverage          = 0x809E
     toGLEnum SampleCoverage                 = 0x80A0
 
-    fromGLEnum 0x0B44 = CullFace
-    fromGLEnum 0x0BE2 = Blend
-    fromGLEnum 0x0BD0 = Dither
-    fromGLEnum 0x0B90 = StencilTest
-    fromGLEnum 0x0B71 = DepthTest
-    fromGLEnum 0x0C11 = ScissorTest
-    fromGLEnum 0x8037 = PolygonOffsetFill
-    fromGLEnum 0x809E = SampleAlphaToCoverage
-    fromGLEnum 0x80A0 = SampleCoverage
+    fromGLEnum 0x0B44 = Just CullFace
+    fromGLEnum 0x0BE2 = Just Blend
+    fromGLEnum 0x0BD0 = Just Dither
+    fromGLEnum 0x0B90 = Just StencilTest
+    fromGLEnum 0x0B71 = Just DepthTest
+    fromGLEnum 0x0C11 = Just ScissorTest
+    fromGLEnum 0x8037 = Just PolygonOffsetFill
+    fromGLEnum 0x809E = Just SampleAlphaToCoverage
+    fromGLEnum 0x80A0 = Just SampleCoverage
+    fromGLEnum _      = Nothing
 
 public
 enable : Context -> Capability -> IO ()
@@ -179,15 +180,16 @@ instance MarshallGLEnum ErrorType where
     toGLEnum OutOfMemory                    = 0x0505
     toGLEnum InvalidFramebufferOperation    = 0x0506
 
-    fromGLEnum 0 = NoError
-    fromGLEnum 0x0500 = InvalidEnum
-    fromGLEnum 0x0501 = InvalidValue
-    fromGLEnum 0x0502 = InvalidOperation
-    fromGLEnum 0x0505 = OutOfMemory
-    fromGLEnum 0x0506 = InvalidFramebufferOperation
+    fromGLEnum 0 = Just NoError
+    fromGLEnum 0x0500 = Just InvalidEnum
+    fromGLEnum 0x0501 = Just InvalidValue
+    fromGLEnum 0x0502 = Just InvalidOperation
+    fromGLEnum 0x0505 = Just OutOfMemory
+    fromGLEnum 0x0506 = Just InvalidFramebufferOperation
+    fromGLEnum _      = Nothing
 
 public
-getError : Context -> IO ErrorType
+getError : Context -> IO (Maybe ErrorType)
 getError (MkContext context) = map fromGLEnum $ mkForeign
     (FFun "%0.getError()"
     [FPtr] FEnum)
@@ -201,7 +203,8 @@ data HintTarget
 
 instance MarshallGLEnum HintTarget where
     toGLEnum GenerateMipmapHint             = 0x8192
-    fromGLEnum 0x8192 = GenerateMipmapHint
+    fromGLEnum 0x8192 = Just GenerateMipmapHint
+    fromGLEnum _      = Nothing
 
 public
 data HintMode
@@ -214,9 +217,10 @@ instance MarshallGLEnum HintMode where
     toGLEnum Fastest                        = 0x1101
     toGLEnum Nicest                         = 0x1102
 
-    fromGLEnum 0x1100 = DontCare
-    fromGLEnum 0x1101 = Fastest
-    fromGLEnum 0x1102 = Nicest
+    fromGLEnum 0x1100 = Just DontCare
+    fromGLEnum 0x1101 = Just Fastest
+    fromGLEnum 0x1102 = Just Nicest
+    fromGLEnum _      = Nothing
 
 public
 hint : Context -> HintTarget -> HintMode -> IO ()
@@ -231,13 +235,20 @@ public
 data Alignment
    = UnpackAlignment
    | PackAlignment
+   | UnpackFlipY
+   | UnpackPremultiplyAlpha
 
 instance MarshallGLEnum Alignment where
     toGLEnum UnpackAlignment                = 0x0CF5
     toGLEnum PackAlignment                  = 0x0D05
+    toGLEnum UnpackFlipY                    = 0x9240
+    toGLEnum UnpackPremultiplyAlpha         = 0x9241
 
-    fromGLEnum 0x0CF5 = UnpackAlignment
-    fromGLEnum 0x0D05 = PackAlignment
+    fromGLEnum 0x0CF5 = Just UnpackAlignment
+    fromGLEnum 0x0D05 = Just PackAlignment
+    fromGLEnum 0x9240 = Just UnpackFlipY
+    fromGLEnum 0x9241 = Just UnpackPremultiplyAlpha
+    fromGLEnum _      = Nothing
 
 public
 pixelStorei : Context -> Alignment -> Int -> IO ()

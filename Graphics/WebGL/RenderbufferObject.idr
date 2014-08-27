@@ -29,15 +29,16 @@ instance MarshallGLEnum RenderbufferParameter where
     toGLEnum RenderbufferDepthSize           = 0x8D54
     toGLEnum RenderbufferStencilSize         = 0x8D55
 
-    fromGLEnum 0x8D42 = RenderbufferWidth
-    fromGLEnum 0x8D43 = RenderbufferHeight
-    fromGLEnum 0x8D44 = RenderbufferInternalFormat
-    fromGLEnum 0x8D50 = RenderbufferRedSize
-    fromGLEnum 0x8D51 = RenderbufferGreenSize
-    fromGLEnum 0x8D52 = RenderbufferBlueSize
-    fromGLEnum 0x8D53 = RenderbufferAlphaSize
-    fromGLEnum 0x8D54 = RenderbufferDepthSize
-    fromGLEnum 0x8D55 = RenderbufferStencilSize
+    fromGLEnum 0x8D42 = Just RenderbufferWidth
+    fromGLEnum 0x8D43 = Just RenderbufferHeight
+    fromGLEnum 0x8D44 = Just RenderbufferInternalFormat
+    fromGLEnum 0x8D50 = Just RenderbufferRedSize
+    fromGLEnum 0x8D51 = Just RenderbufferGreenSize
+    fromGLEnum 0x8D52 = Just RenderbufferBlueSize
+    fromGLEnum 0x8D53 = Just RenderbufferAlphaSize
+    fromGLEnum 0x8D54 = Just RenderbufferDepthSize
+    fromGLEnum 0x8D55 = Just RenderbufferStencilSize
+    fromGLEnum _      = Nothing
 
 instance MarshallToJType RenderbufferParameter where
     toJType RenderbufferWidth               = JInt
@@ -53,11 +54,11 @@ instance MarshallToJType RenderbufferParameter where
 ----------------------------------------------------------------------
 
 public
-getRenderbufferParameter : Context -> RenderbufferTarget -> (pname : RenderbufferParameter) -> IO (interpJType (toJType pname))
+getRenderbufferParameter : Context -> RenderbufferTarget -> (pname : RenderbufferParameter) -> IO (interpJRetType (toJType pname))
 getRenderbufferParameter (MkContext context) target pname =
-    map (unpackType (toJType pname)) $ mkForeign
+    map (unpackType pname) $ mkForeign
     (FFun "%0.getRenderbufferParameter(%1, %2)"
-    [FPtr, FEnum, FEnum] (toFType (toJType pname)))
+    [FPtr, FEnum, FEnum] (JTypeToFType pname))
     context (toGLEnum target) (toGLEnum pname)
 
 ----------------------------------------------------------------------
@@ -113,11 +114,12 @@ instance MarshallGLEnum StorageFormat where
     toGLEnum StorageFormatDepthComponent16               = 0x81A5
     toGLEnum StorageFormatStencilIndex8                  = 0x8D48
 
-    fromGLEnum 0x8056 = StorageFormatRGBA4
-    fromGLEnum 0x8057 = StorageFormatRGB5A1
-    fromGLEnum 0x8D62 = StorageFormatRGB565
-    fromGLEnum 0x81A5 = StorageFormatDepthComponent16
-    fromGLEnum 0x8D48 = StorageFormatStencilIndex8
+    fromGLEnum 0x8056 = Just StorageFormatRGBA4
+    fromGLEnum 0x8057 = Just StorageFormatRGB5A1
+    fromGLEnum 0x8D62 = Just StorageFormatRGB565
+    fromGLEnum 0x81A5 = Just StorageFormatDepthComponent16
+    fromGLEnum 0x8D48 = Just StorageFormatStencilIndex8
+    fromGLEnum _      = Nothing
 
 public
 renderbufferStorage : Context -> RenderbufferTarget -> StorageFormat -> Int -> Int -> IO ()
